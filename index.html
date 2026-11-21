@@ -4,21 +4,24 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Rechnungen">
+<meta name="apple-mobile-web-app-title" content="Lerntraining">
+<meta name="theme-color" content="#1e3cb8">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" href="icon.png">
 <title>Lerntraining Rechnungen</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
 <style>
 /* VOICE: ruhig, freundlich, klar – ein Werkzeug für eine Lerntrainerin, kein Büroprogramm
-   IDEA: das Schulheft – linierte Tagesseiten, Füller-Tinte, roter Korrekturstift
-   PICTURE: der Wochenkalender selbst, mit großen hängenden Uhrzeiten
-   COLOUR and TYPE: Weiß, Tintenblau #1e3cb8, Korrekturrot #cc2f2a; Atkinson Hyperlegible (für Leselernende entworfen)
+   IDEA: das Schulheft – Füller-Tinte, roter Korrekturstift, saubere Zeilen
+   PICTURE: der Tagesplan selbst, mit großen hängenden Uhrzeiten
+   COLOUR and TYPE: Weiß, Tintenblau #1e3cb8, Korrekturrot #cc2f2a; Atkinson Hyperlegible (für gute Lesbarkeit entworfen)
    LAYOUT: Kopfleiste mit Reitern, darunter eine Arbeitsfläche; große Tippflächen fürs iPad */
 :root{color-scheme:light dark;--bg:light-dark(#fff,#0e1320);--paper:light-dark(#f4f6fb,#161c2b);--line:light-dark(#dde3ef,#283149);--ink:light-dark(#151a2c,#e9edf7);--muted:light-dark(#5a647e,#9ca6c0);--tinte:light-dark(#1e3cb8,#93a9ff);--tinte2:light-dark(#e8edff,#1d2747);--rot:light-dark(#cc2f2a,#ff8078);--rot2:light-dark(#fdecea,#3a1c1f);--head:light-dark(#1e3cb8,#16224f)}
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
 *{box-sizing:border-box;min-width:0}
-body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 'Atkinson Hyperlegible',system-ui,sans-serif;overflow-x:clip}
-.top{background:var(--head);color:#fff;padding:14px max(3vw,14px) 0}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 'Atkinson Hyperlegible',system-ui,sans-serif;overflow-x:clip;-webkit-text-size-adjust:100%}
+.top{background:var(--head);color:#fff;padding:calc(14px + env(safe-area-inset-top,0px)) max(3vw,14px) 0}
 .top .in{max-width:1240px;margin:0 auto}
 .top h1{margin:0 0 10px;font-size:22px;line-height:1.1}
 .top h1 small{display:block;font-weight:400;opacity:.8;font-size:14px}
@@ -30,7 +33,9 @@ main{max-width:1240px;margin:0 auto;padding:20px max(3vw,14px) 80px}
 .bar h2{margin:0;font-size:30px;line-height:1.1;text-wrap:balance}
 h3{font-size:21px;margin:26px 0 10px}
 .sp{flex:1}
-.btn{font:inherit;font-weight:700;min-height:44px;padding:8px 18px;border-radius:12px;border:0;background:var(--tinte);color:light-dark(#fff,#0e1320);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none}
+.ctl{display:flex;gap:8px;flex-wrap:nowrap}
+@media(max-width:600px){.ctl{width:100%}.ctl .seg{margin-right:auto}.ctl .btn{padding:8px 12px}}
+.btn{font:inherit;font-weight:700;min-height:44px;padding:8px 18px;border-radius:12px;border:0;background:var(--tinte);color:light-dark(#fff,#0e1320);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;-webkit-tap-highlight-color:transparent}
 .btn.ghost{background:var(--tinte2);color:var(--tinte)}
 .btn.danger{background:var(--rot2);color:var(--rot)}
 .btn.big{min-height:54px;font-size:18px;padding:12px 24px}
@@ -38,7 +43,6 @@ h3{font-size:21px;margin:26px 0 10px}
 .btn:disabled{opacity:.45;cursor:default}
 :focus-visible{outline:3px solid var(--rot);outline-offset:2px}
 .muted{color:var(--muted)}
-.week{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:12px}
 .seg{display:inline-flex;background:var(--tinte2);border-radius:12px;padding:3px}
 .seg button{font:inherit;font-weight:700;border:0;background:none;color:var(--tinte);min-height:38px;padding:4px 16px;border-radius:10px;cursor:pointer}
 .seg button.on{background:var(--bg);color:var(--ink);box-shadow:0 1px 3px rgb(0 0 0/.15)}
@@ -55,28 +59,26 @@ h3{font-size:21px;margin:26px 0 10px}
 .agenda .who{font:inherit;color:inherit;background:none;border:0;text-align:left;padding:4px 0;cursor:pointer;display:flex;flex-direction:column;min-height:48px;justify-content:center}
 .agenda .who b{font-size:19px}.agenda .who small{color:var(--muted);font-size:14px}
 .agenda li.off .who b{text-decoration:line-through;color:var(--muted)}.agenda li.off .t{color:var(--rot)}
+.agenda li.fee .t{color:var(--rot)}
+.flag{display:inline-block;border-radius:999px;padding:0 8px;font-size:13px;font-weight:700;background:var(--rot2);color:var(--rot);margin-left:6px;vertical-align:2px}
+.week{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:12px}
+.day{background:var(--paper);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:6px}
+.day.today{box-shadow:inset 0 0 0 2px var(--tinte)}
 .dhead{font:inherit;color:inherit;background:none;border:0;text-align:left;padding:0;cursor:pointer;display:flex;flex-direction:column;line-height:1.2;min-height:44px}
 .dhead span{color:var(--muted);font-size:14px}
-.tm.c{flex-direction:row;align-items:baseline;gap:8px;padding:6px 10px;min-height:40px}
-.tm.c .t{font-size:15px}.tm.c b{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tm.off b{text-decoration:line-through;color:var(--muted)}
-@media(max-width:600px){.strip small{display:none}.agenda li{grid-template-columns:70px minmax(0,1fr)}.agenda li>.btn{grid-column:2;justify-self:start}.agenda .t{font-size:20px}}
-.day{background:var(--paper);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:8px;gap:6px}
-.day.today{box-shadow:inset 0 0 0 2px var(--tinte)}
-.day header{display:flex;flex-direction:column;line-height:1.2;min-height:40px}
-.day header span{color:var(--muted);font-size:14px;white-space:nowrap}
-.tm{display:flex;flex-direction:column;gap:2px;align-items:flex-start;text-align:left;width:100%;font:inherit;color:inherit;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px;min-height:44px;cursor:pointer}
-.tm .t{font-weight:700;color:var(--tinte);font-variant-numeric:tabular-nums;white-space:nowrap;font-size:18px;line-height:1.2}
-.tm .who{display:flex;flex-direction:column;font-weight:700;line-height:1.25}
-.tm small{font-weight:400;color:var(--muted);font-size:13px}
-.tm.off .who b{text-decoration:line-through;color:var(--muted)}.tm.off .t{color:var(--rot)}
-.tm.done{border-style:dashed}
+.tm{display:flex;flex-direction:row;align-items:baseline;gap:8px;text-align:left;width:100%;font:inherit;color:inherit;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:6px 10px;min-height:40px;cursor:pointer}
+.tm .t{font-weight:700;color:var(--tinte);font-variant-numeric:tabular-nums;white-space:nowrap;font-size:15px}
+.tm b{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tm.off b{text-decoration:line-through;color:var(--muted)}.tm.off .t{color:var(--rot)}
 .add{font:inherit;color:var(--tinte);background:var(--bg);border:1.5px dashed var(--line);border-radius:12px;min-height:44px;cursor:pointer;margin-top:auto;font-weight:700}
 .free{color:var(--muted);margin:2px;font-size:14px}
 .sum{margin-top:14px;color:var(--muted);font-size:15px}
+.tools{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px}
+.tools input[type=search]{max-width:380px}
+.tools label{margin:0}
 .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
 .card{text-align:left;font:inherit;color:inherit;background:var(--paper);border:0;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:6px;cursor:pointer}
-.card b{font-size:19px}
+.card b{font-size:19px}.card.end{opacity:.6}
 .tag{align-self:flex-start;background:var(--tinte2);color:var(--tinte);border-radius:999px;padding:2px 10px;font-size:14px;font-weight:700}
 .panel{background:var(--paper);border-radius:18px;padding:20px;margin-bottom:20px}
 .panel h2{margin:0 0 6px;font-size:26px;line-height:1.1}
@@ -104,33 +106,44 @@ label.chk{flex-direction:row;align-items:center;gap:10px;font-weight:400;font-si
 label.chk input{width:24px;height:24px;min-height:0;flex:none}
 .acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px}
 .note{background:var(--tinte2);border-radius:12px;padding:10px 14px;font-size:15px;margin:8px 0}
-.demo{background:var(--rot2);border-radius:14px;padding:10px 14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px;font-size:15px}
-.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:12px;z-index:30;max-width:92vw;opacity:0;pointer-events:none;transition:opacity .25s}
+.warn{background:var(--rot2);border-radius:12px;padding:10px 14px;font-size:15px;margin:8px 0}
+.banner{border-radius:14px;padding:10px 14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px;font-size:15px;background:var(--rot2)}
+.banner.info{background:var(--tinte2)}
+.toast{position:fixed;bottom:calc(24px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:12px;z-index:30;max-width:92vw;opacity:0;pointer-events:none;transition:opacity .25s}
 .toast.on{opacity:1}
 .sheetwrap{background:var(--paper);border-radius:12px;padding:8px;overflow:auto;max-height:70vh;margin-bottom:12px}
 fieldset{border:0;padding:0;margin:0 0 22px}
 legend{font-size:21px;font-weight:700;margin-bottom:10px}
-.lrow{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1.3fr) minmax(0,1fr) auto;gap:8px;align-items:end;margin-bottom:8px}
+.lrow{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1.5fr) minmax(0,1fr) minmax(0,1fr) auto;gap:8px;align-items:end;margin-bottom:8px}
 .lrow label{margin:0}
 .steps ol{margin:0 0 14px;padding-left:22px}
+.start{counter-reset:s;list-style:none;padding:0;margin:0;display:grid;gap:10px}
+.start li{display:flex;gap:14px;align-items:center;background:var(--bg);border-radius:14px;padding:12px 14px}
+.start li::before{counter-increment:s;content:counter(s);flex:none;width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font-weight:700;background:var(--tinte2);color:var(--tinte)}
+.start li.done::before{content:"✓";background:var(--tinte);color:light-dark(#fff,#0e1320)}
+.start li span{flex:1}
 details{margin-top:14px}summary{cursor:pointer;color:var(--tinte);font-weight:700;min-height:44px;display:flex;align-items:center}
 .empty{background:var(--paper);border-radius:16px;padding:24px;text-align:center;color:var(--muted)}
 #print{display:none}
-.inv{width:210mm;min-height:297mm;padding:18mm 20mm 30mm;background:#fff;color:#111;font:10.5pt/1.45 'Atkinson Hyperlegible',Arial,sans-serif;position:relative;margin:0 auto}
-.inv .ih{display:flex;justify-content:space-between;gap:20px;border-bottom:2px solid #1e3cb8;padding-bottom:5mm}
+/* Rechnung / Brief nach DIN 5008, Form B (Fensterumschlag DIN lang) */
+.inv{width:210mm;min-height:297mm;padding:12mm 20mm 12mm 25mm;background:#fff;color:#111;font:10.5pt/1.45 'Atkinson Hyperlegible',Arial,sans-serif;position:relative;margin:0 auto;display:flex;flex-direction:column}
+.inv .falz{position:absolute;left:4mm;width:5mm;border-top:.3mm solid #aaa}.inv .f1{top:105mm}.inv .f2{top:210mm}.inv .lo{top:148.5mm;width:7mm}
+.inv .ih{height:33mm;display:flex;justify-content:space-between;gap:10mm;align-items:flex-start;border-bottom:.6mm solid #1e3cb8}
 .inv .iname{font-size:18pt;font-weight:700;color:#1e3cb8;line-height:1.1}
-.inv .ir{text-align:right;font-size:9.5pt;color:#444}
-.inv .snd{font-size:7.5pt;color:#666;margin-top:12mm;text-decoration:underline}
-.inv .ia{margin-top:2mm;min-height:26mm;font-size:11pt}
-.inv .im{width:auto;margin-left:auto;font-size:9.5pt}
-.inv .im td{border:0;padding:1px 0 1px 10mm;color:#111}
-.inv h1{font-size:17pt;margin:8mm 0 3mm}
+.inv .ir{text-align:right;font-size:9pt;color:#444}
+.inv .ifield{height:45mm;display:flex;justify-content:space-between;gap:8mm}
+.inv .iadr{width:85mm;margin-left:-5mm;padding-top:3mm;font-size:11pt}
+.inv .snd{font-size:7pt;color:#666;text-decoration:underline;margin-bottom:2mm}
+.inv .im{width:auto;margin-top:3mm;font-size:9.5pt;align-self:flex-start}
+.inv .im td{border:0;padding:1px 0 1px 6mm;color:#111}
+.inv .ibody{flex:1;padding-top:6mm}
+.inv h1{font-size:16pt;margin:0 0 3mm}
 .inv th,.inv td{border-color:#ddd;color:#111;padding:5px 6px}
 .inv .ip th{color:#555;font-size:9pt;border-bottom:1.5px solid #111}
 .inv .ip tfoot td{border:0;border-top:1.5px solid #111;font-weight:700;font-size:11.5pt}
-.inv .if{position:absolute;left:20mm;right:20mm;bottom:12mm;border-top:1px solid #ccc;padding-top:3mm;font-size:8pt;color:#555;text-align:center}
-@media(max-width:600px){table{font-size:14px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px;border-bottom:1px solid var(--line)}.stack td{display:flow-root;border:0;padding:3px 0;padding-inline-start:8em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:7.5em;margin-inline-start:-8em;white-space:normal;color:var(--muted)}.stack td:empty{display:none}.tacts{justify-content:flex-start}.lrow{grid-template-columns:1fr 1fr}}
-@media print{@page{size:A4;margin:0}body{background:#fff}body>*:not(#print){display:none!important}#print{display:block!important}.inv{break-after:page;height:297mm;overflow:hidden}}
+.inv .if{margin-top:10mm;border-top:1px solid #ccc;padding-top:3mm;font-size:8pt;color:#555;text-align:center}
+@media(max-width:600px){table{font-size:14px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px;border-bottom:1px solid var(--line)}.stack td{display:flow-root;border:0;padding:3px 0;padding-inline-start:8em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:7.5em;margin-inline-start:-8em;white-space:normal;color:var(--muted)}.stack td:empty{display:none}.tacts{justify-content:flex-start}.lrow{grid-template-columns:1fr 1fr}.strip small{display:none}.agenda li{grid-template-columns:70px minmax(0,1fr)}.agenda li>.btn{grid-column:2;justify-self:start}.agenda .t{font-size:20px}}
+@media print{@page{size:A4;margin:0}body{background:#fff}body>*:not(#print){display:none!important}#print{display:block!important}.inv{min-height:0;overflow:hidden;break-after:page}.inv:last-child{break-after:auto}.inv .f2{display:none}}
 @media(prefers-reduced-motion:reduce){.toast{transition:none}}
 </style>
 <script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script>
@@ -160,113 +173,131 @@ const de=s=>s?s.split('-').reverse().join('.'):'';
 const pISO=s=>{const[a,b,c]=s.split('-').map(Number);return new Date(a,b-1,c)};
 const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
 const monday=d=>{const x=new Date(d.getFullYear(),d.getMonth(),d.getDate());return addDays(x,-((x.getDay()+6)%7))};
+const workday=d=>d.getDay()===0?addDays(d,1):d;
+const daysBetween=(a,b)=>Math.round((pISO(b)-pISO(a))/864e5);
+const addMin=(zeit,m)=>{const[h,mm]=zeit.split(':').map(Number);const x=h*60+mm+(+m||0);return z(Math.floor(x/60)%24)+':'+z(x%60)};
 const MON=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
 const TAGE=['Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+const WT=['So','Mo','Di','Mi','Do','Fr','Sa'];
 const monatName=m=>{const[y,mm]=m.split('-');return MON[+mm-1]+' '+y};
 const isoWeek=d=>{const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));const n=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-n);const y=new Date(Date.UTC(t.getUTCFullYear(),0,1));return Math.ceil(((t-y)/864e5+1)/7)};
 const today=()=>iso(new Date());
+const byName=(a,b)=>a.name.localeCompare(b.name,'de');
 let inFrame=false;try{inFrame=window.self!==window.top}catch(e){inFrame=true}
+const standalone=!!navigator.standalone;
 const BEREICHE=['Legasthenie','Dyskalkulie','Legasthenie & Dyskalkulie'];
 const HINWEISE={k19:'Gemäß § 19 UStG wird keine Umsatzsteuer berechnet.',n21:'Die Leistung ist gemäß § 4 Nr. 21 UStG von der Umsatzsteuer befreit.'};
 
-function blank(){const y=new Date().getFullYear();return{demo:false,settings:{name:'',titel:'Lerntraining bei Legasthenie & Dyskalkulie',str:'',ort:'',tel:'',mail:'',iban:'',bic:'',bank:'',stnr:'',hinweis:HINWEISE.k19,ziel:14,nrJahr:y,nrNext:1},leistungen:[{id:'test',name:'Eingangstest',art:'pauschal',preis:80},{id:'std',name:'Trainingsstunde',art:'stunde',preis:45}],kinder:[],termine:[],rechnungen:[]}}
+function blank(){const y=new Date().getFullYear();return{demo:false,lastBackup:null,settings:{name:'',titel:'Lerntraining bei Legasthenie & Dyskalkulie',str:'',ort:'',tel:'',mail:'',iban:'',bic:'',bank:'',stnr:'',hinweis:HINWEISE.k19,ziel:14,nrJahr:y,nrNext:1,start:'14:00',ausfall:false},leistungen:[{id:'test',name:'Eingangstest',art:'pauschal',preis:80,dauer:90},{id:'std',name:'Trainingsstunde',art:'stunde',preis:45,dauer:60}],kinder:[],termine:[],rechnungen:[]}}
+function migrate(s){const b=blank();s.settings={...b.settings,...s.settings};s.leistungen=s.leistungen||b.leistungen;s.leistungen.forEach(l=>{if(!l.dauer)l.dauer=l.art==='pauschal'?90:60});s.kinder=s.kinder||[];s.kinder.forEach(k=>{if(k.aktiv==null)k.aktiv=true});s.termine=s.termine||[];s.rechnungen=s.rechnungen||[];return s}
 function demo(){
   const s=blank();s.demo=true;
-  Object.assign(s.settings,{name:'Doris Muster',str:'Musterweg 1',ort:'91738 Pfofeld',tel:'09834 000000',mail:'lerntraining@example.de',iban:'DE12 3456 7890 1234 5678 90',bic:'GENODEF1XXX',bank:'Musterbank eG'});
-  const VN=['Lena','Jonas','Mia','Paul','Emma','Ben','Hannah','Luis','Sophie','Felix','Marie','Noah','Lea','Elias','Anna','Leon','Clara','Max','Lina','Jakob','Ella','Tim','Nele','Finn','Laura','Moritz','Johanna','Lukas','Ida','David','Greta','Simon'];
-  const NN=['Müller','Weber','Schneider','Fischer','Meyer','Wagner','Becker','Schulz','Hoffmann','Koch','Bauer','Richter','Klein','Wolf','Schröder','Neumann','Schwarz','Zimmermann','Braun','Krüger','Hofmann','Hartmann','Lange','Schmitt','Werner','Krause','Meier','Lehmann','Schmid','Schulze','Maier','Köhler'];
+  Object.assign(s.settings,{name:'Doris Muster',str:'Musterweg 1',ort:'91738 Pfofeld',tel:'09834 000000',mail:'lerntraining@example.de',iban:'DE12 3456 7890 1234 5678 90',bic:'GENODEF1XXX',bank:'Musterbank eG',stnr:'203/123/45678',start:'13:30',ausfall:true});
+  s.leistungen[1].preis=40;s.leistungen[1].dauer=45;
+  const VN=['Lena','Jonas','Mia','Paul','Emma','Ben','Hannah','Luis','Sophie','Felix','Marie','Noah','Lea','Elias','Anna','Leon','Clara','Max','Lina','Jakob','Ella','Tim','Nele','Finn','Laura','Moritz','Johanna','Lukas','Ida','David','Greta','Simon','Paula'];
+  const NN=['Müller','Weber','Schneider','Fischer','Meyer','Wagner','Becker','Schulz','Hoffmann','Koch','Bauer','Richter','Klein','Wolf','Schröder','Neumann','Schwarz','Zimmermann','Braun','Krüger','Hofmann','Hartmann','Lange','Schmitt','Werner','Krause','Meier','Lehmann','Schmid','Schulze','Maier','Köhler','Graf'];
   const ORT=['91710 Gunzenhausen','91738 Pfofeld','91781 Weißenburg','91720 Absberg','91741 Theilenhofen'],STR=['Hauptstraße','Am Anger','Bahnhofstraße','Kirchweg','Gartenstraße','Ringstraße'];
   const SLOT=['13:30','14:15','15:00','15:45','16:30','17:15','18:00','18:45'],PRO=[6,8,5,7,6];
-  s.leistungen[1].preis=40;
-  const now=new Date(),start=new Date(now.getFullYear(),now.getMonth()-1,1),end=addDays(now,21);let ki=0;
+  const now=new Date(),start=new Date(now.getFullYear(),now.getMonth()-1,1),end=addDays(now,28);let ki=0;
   PRO.forEach((cnt,wi)=>{for(let j=0;j<cnt;j++,ki++){
-    const nn=NN[ki%NN.length],k={id:uid(),name:VN[ki%VN.length]+' '+nn,bereich:BEREICHE[ki%3],empf:'Familie '+nn,str:STR[ki%6]+' '+(ki%17+1),ort:ORT[ki%5],mail:'',satz:ki===5?36:'',notiz:''};s.kinder.push(k);
+    const nn=NN[ki],k={id:uid(),name:VN[ki]+' '+nn,bereich:BEREICHE[ki%3],empf:'Familie '+nn,str:STR[ki%6]+' '+(ki%17+1),ort:ORT[ki%5],mail:'',satz:ki===5?36:'',notiz:'',aktiv:true};s.kinder.push(k);
     const wd=wi+1,test=ki%11===4;let d=addDays(start,(wd-start.getDay()+7)%7),first=true,serie=uid(),n=0;
-    while(d<=end){s.termine.push({id:uid(),kindId:k.id,datum:iso(d),zeit:SLOT[j],dauer:first&&test?90:45,lid:first&&test?'test':'std',abgesagt:(ki*7+n)%19===0,serie,rechnungId:null});first=false;n++;d=addDays(d,7)}
+    while(d<=end){const ab=(ki*7+n)%19===0;s.termine.push({id:uid(),kindId:k.id,datum:iso(d),zeit:SLOT[j],dauer:first&&test?90:45,lid:first&&test?'test':'std',abgesagt:ab,ausfall:ab&&ki%2===0,grund:ab?'abgesagt':null,serie,rechnungId:null});first=false;n++;d=addDays(d,7)}
   }});
+  s.kinder.push({id:uid(),name:'Paula Graf',bereich:'Legasthenie',empf:'Familie Graf',str:'Kirchweg 4',ort:'91710 Gunzenhausen',mail:'',satz:'',notiz:'Training im Sommer abgeschlossen',aktiv:false});
   S=s;const pm=iso(start).slice(0,7);const neu=createInvoices(pm,iso(new Date(now.getFullYear(),now.getMonth(),1)));
   neu.forEach((r,i)=>{if(i%4)r.bezahlt={datum:iso(new Date(now.getFullYear(),now.getMonth(),Math.min(5,now.getDate()))),quelle:'manuell'}});
   return s;
 }
 let S;
-const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){toast('Achtung: Speichern auf diesem Gerät nicht möglich')}};
 
 const kind=id=>S.kinder.find(k=>k.id===id);
 const leist=id=>S.leistungen.find(l=>l.id===id);
+const billable=t=>!t.abgesagt||t.ausfall;
 function satzVon(t){const l=leist(t.lid),k=kind(t.kindId);return k&&k.satz!==''&&k.satz!=null?+k.satz:+(l?.preis||0)}
 function preisVon(t){const l=leist(t.lid);if(!l)return 0;return l.art==='pauschal'?+l.preis:r2(satzVon(t)*t.dauer/60)}
+function posText(t){const l=leist(t.lid);if(t.abgesagt&&t.ausfall)return`Ausfallhonorar – kurzfristig abgesagt (${t.dauer} Min.)`;return l.art==='stunde'?`${l.name} (${t.dauer} Min. à ${eur(satzVon(t))}/Std.)`:`${l.name} (${t.dauer} Min.)`}
+const stLabel=t=>t.abgesagt?(t.grund==='ferien'?'Ferien':t.ausfall?'Ausfall – wird berechnet':'abgesagt'):'';
 function nextNr(datum){const y=+datum.slice(0,4);if(S.settings.nrJahr!==y){S.settings.nrJahr=y;S.settings.nrNext=1}return y+'-'+String(S.settings.nrNext++).padStart(3,'0')}
-const pending=m=>S.termine.filter(t=>t.datum.startsWith(m)&&t.datum<=today()&&!t.abgesagt&&!t.rechnungId&&kind(t.kindId));
+const pending=m=>S.termine.filter(t=>t.datum.startsWith(m)&&t.datum<=today()&&billable(t)&&!t.rechnungId&&kind(t.kindId));
+function groupPending(m){const by={};pending(m).forEach(t=>(by[t.kindId]=by[t.kindId]||[]).push(t));return Object.keys(by).map(id=>({k:kind(id),ts:by[id].sort((a,b)=>(a.datum+a.zeit).localeCompare(b.datum+b.zeit))})).sort((a,b)=>byName(a.k,b.k))}
 function createInvoices(m,datum){
-  const by={};pending(m).forEach(t=>(by[t.kindId]=by[t.kindId]||[]).push(t));
-  const ids=Object.keys(by).sort((a,b)=>kind(a).name.localeCompare(kind(b).name));
-  return ids.map(kid=>{
-    const k=kind(kid),ts=by[kid].sort((a,b)=>(a.datum+a.zeit).localeCompare(b.datum+b.zeit));
-    const pos=ts.map(t=>{const l=leist(t.lid);return{datum:t.datum,text:l.name+(l.art==='stunde'?` (${t.dauer} Min. à ${eur(satzVon(t))}/Std.)`:''),dauer:t.dauer,betrag:preisVon(t)}});
-    const r={id:uid(),nr:nextNr(datum),kindId:kid,kname:k.name,bereich:k.bereich,empf:k.empf,str:k.str,ort:k.ort,datum,faellig:iso(addDays(pISO(datum),+S.settings.ziel||14)),monat:m,pos,summe:r2(pos.reduce((a,p)=>a+p.betrag,0)),bezahlt:null};
+  return groupPending(m).map(({k,ts})=>{
+    const pos=ts.map(t=>({datum:t.datum,text:posText(t),dauer:t.dauer,betrag:preisVon(t)}));
+    const r={id:uid(),nr:nextNr(datum),kindId:k.id,kname:k.name,bereich:k.bereich,empf:k.empf,str:k.str,ort:k.ort,datum,faellig:iso(addDays(pISO(datum),+S.settings.ziel||14)),monat:m,pos,summe:r2(pos.reduce((a,p)=>a+p.betrag,0)),bezahlt:null,erinnert:null};
     ts.forEach(t=>t.rechnungId=r.id);S.rechnungen.push(r);return r;
   });
 }
-function status(r){if(r.bezahlt)return`<span class="pill ok">bezahlt ${de(r.bezahlt.datum)}</span>`;if(today()>r.faellig)return'<span class="pill due">überfällig</span>';return'<span class="pill open">offen</span>'}
+const overdue=r=>!r.bezahlt&&today()>r.faellig;
+function status(r){if(r.bezahlt)return`<span class="pill ok">bezahlt ${de(r.bezahlt.datum)}</span>`;if(overdue(r))return`<span class="pill due">überfällig${r.erinnert?' · erinnert '+de(r.erinnert).slice(0,6):''}</span>`;return'<span class="pill open">offen</span>'}
+function festerTermin(k){const t=S.termine.filter(t=>t.kindId===k.id&&t.datum>=today()&&!t.abgesagt).sort((a,b)=>(a.datum+a.zeit).localeCompare(b.datum+b.zeit))[0];return t?`${WT[pISO(t.datum).getDay()]} ${t.zeit}`:''}
 
 try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){S=null}
-if(!S||!S.settings)S=demo();
+S=S&&S.settings?migrate(S):demo();
 save();
+try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
 
-let tab='kalender',calView='tag',curDay=new Date(),selMonth=(()=>{const d=new Date();if(d.getDate()<=10)d.setMonth(d.getMonth()-1,1);return iso(d).slice(0,7)})(),match=null;
+let tab='kalender',calView='tag',curDay=workday(new Date()),ksuche='',kalle=false,selMonth=(()=>{const d=new Date();if(d.getDate()<=10)d.setMonth(d.getMonth()-1,1);return iso(d).slice(0,7)})(),match=null;
 const V={};
 
-const ende=t=>{const[hh,mm]=t.zeit.split(':').map(Number);const m=hh*60+mm+(+t.dauer||0);return z(Math.floor(m/60)%24)+':'+z(m%60)};
-const kurz=n=>{const p=String(n).trim().split(/\s+/);return p.length>1?p[0]+' '+p[p.length-1][0]+'.':n};
 V.kalender=()=>{
-  if(!S.kinder.length)return`<div class="bar"><h2>Kalender</h2></div><div class="empty">Noch keine Kinder angelegt.<br><br><a class="btn" href="#kinder">Erstes Kind anlegen</a></div>`;
+  if(!S.kinder.length){const s=S.settings,st=[[!!(s.name&&s.iban),'Briefkopf und Bankverbindung eintragen','#einstellungen','Einstellungen'],[!!s.stnr,'Preise und Steuerhinweis prüfen','#einstellungen','Einstellungen'],[false,'Kinder mit Rechnungsadresse anlegen','#kinder','Kinder'],[false,'Feste wöchentliche Termine eintragen – geht direkt beim Anlegen des Kindes','','']];
+    return`<div class="bar"><h2>Willkommen!</h2></div><section class="panel"><h2>So geht's los</h2><p class="muted">Vier Schritte, danach läuft der Monatsabschluss mit einem Knopfdruck.</p><ol class="start">${st.map(([d,t,h,l])=>`<li class="${d?'done':''}"><span>${t}</span>${h?`<a class="btn sm ghost" href="${h}">${l}</a>`:''}</li>`).join('')}</ol></section>`}
   const td=today(),wk=monday(curDay),days=TAGE.map((_,i)=>addDays(wk,i)),cd=iso(curDay);
-  const on=(t)=>S.termine.filter(x=>x.datum===t).sort((a,b)=>a.zeit.localeCompare(b.zeit));
+  const on=d=>S.termine.filter(x=>x.datum===d).sort((a,b)=>a.zeit.localeCompare(b.zeit));
   const seg=`<div class="seg" role="group" aria-label="Ansicht"><button class="${calView==='tag'?'on':''}" data-act="view" data-v="tag">Tag</button><button class="${calView==='woche'?'on':''}" data-act="view" data-v="woche">Woche</button></div>`;
   const nav=st=>`<button class="btn ghost" data-act="nav" data-d="-${st}" aria-label="Zurück">‹</button><button class="btn ghost" data-act="nav" data-d="0">Heute</button><button class="btn ghost" data-act="nav" data-d="${st}" aria-label="Weiter">›</button>`;
+  const ferienBtn='<button class="btn ghost" data-act="ferien">Ferien / frei</button>';
   if(calView==='tag'){
-    const ts=on(cd),act=ts.filter(t=>!t.abgesagt),dow=(curDay.getDay()+6)%7;
+    const ts=on(cd),act=ts.filter(billable),dow=(curDay.getDay()+6)%7,nAb=ts.filter(t=>t.abgesagt).length;
     const strip=`<div class="strip">${days.map((d,i)=>{const di=iso(d),n=on(di).filter(t=>!t.abgesagt).length;return`<button class="chip${di===cd?' on':''}${di===td?' today':''}" data-act="day" data-date="${di}"><span>${TAGE[i].slice(0,2)}</span><b>${d.getDate()}.</b><small>${n?n+' Kinder':'frei'}</small></button>`}).join('')}</div>`;
-    return`<div class="bar"><h2>${dow<6?TAGE[dow]:'Sonntag'}, ${curDay.getDate()}. ${MON[curDay.getMonth()]}</h2><span class="sp"></span>${seg}${nav(1)}</div>${strip}
-    <div class="dayhead"><span><b>${act.length} Kinder</b> <span class="muted">· ${eur(act.reduce((a,t)=>a+preisVon(t),0))}${ts.length>act.length?` · ${ts.length-act.length} abgesagt`:''}</span></span><span class="sp"></span><button class="btn" data-act="newTermin" data-date="${cd}">+ Termin</button></div>
-    ${ts.length?`<ol class="agenda">${ts.map(t=>{const k=kind(t.kindId),l=leist(t.lid);return`<li class="${t.abgesagt?'off':''}"><span class="t">${t.zeit}<small>bis ${ende(t)}</small></span><button class="who" data-act="editTermin" data-id="${t.id}"><b>${esc(k?.name||'(gelöscht)')}</b><small>${esc(k?.bereich||'')} · ${esc(l?.name||'')} · ${t.dauer} Min.${t.rechnungId?' · abgerechnet':''}</small></button>${t.rechnungId?'<span></span>':`<button class="btn sm ${t.abgesagt?'':'ghost'}" data-act="abg" data-id="${t.id}">${t.abgesagt?'Kommt doch':'Abgesagt'}</button>`}</li>`}).join('')}</ol>`:'<div class="empty">Keine Termine an diesem Tag.</div>'}`;
+    return`<div class="bar"><h2>${dow<6?TAGE[dow]:'Sonntag'}, ${curDay.getDate()}. ${MON[curDay.getMonth()]}</h2><span class="sp"></span><span class="ctl">${seg}${nav(1)}</span></div>${strip}
+    <div class="dayhead"><span><b>${ts.length-nAb} Kinder</b> <span class="muted">· ${eur(act.reduce((a,t)=>a+preisVon(t),0))}${nAb?` · ${nAb} abgesagt`:''}</span></span><span class="sp"></span>${ferienBtn}<button class="btn" data-act="newTermin" data-date="${cd}">+ Termin</button></div>
+    ${ts.length?`<ol class="agenda">${ts.map(t=>{const k=kind(t.kindId),l=leist(t.lid);return`<li class="${t.abgesagt?(t.ausfall?'off fee':'off'):''}"><span class="t">${t.zeit}<small>bis ${addMin(t.zeit,t.dauer)}</small></span><button class="who" data-act="editTermin" data-id="${t.id}"><b>${esc(k?.name||'(gelöscht)')}${t.abgesagt?`<span class="flag">${stLabel(t)}</span>`:''}</b><small>${esc(k?.bereich||'')} · ${esc(l?.name||'')} · ${t.dauer} Min.${t.rechnungId?' · abgerechnet':''}</small></button>${t.rechnungId?'<span></span>':`<button class="btn sm ${t.abgesagt?'':'ghost'}" data-act="abg" data-id="${t.id}">${t.abgesagt?'Kommt doch':'Abgesagt'}</button>`}</li>`}).join('')}</ol>`:`<div class="empty">Keine Termine an diesem Tag.${curDay.getDay()!==6&&cd>=td?'<br>Zum nächsten Tag einfach nach links wischen.':''}</div>`}`;
   }
-  const wt=S.termine.filter(t=>t.datum>=iso(days[0])&&t.datum<=iso(days[5])&&!t.abgesagt);
-  return`<div class="bar"><h2>Woche ${isoWeek(wk)}</h2><span class="muted">${de(iso(days[0]))} – ${de(iso(days[5]))}</span><span class="sp"></span>${seg}${nav(7)}</div>
+  const wt=S.termine.filter(t=>t.datum>=iso(days[0])&&t.datum<=iso(days[5])&&billable(t));
+  return`<div class="bar"><h2>Woche ${isoWeek(wk)}</h2><span class="muted">${de(iso(days[0]))} – ${de(iso(days[5]))}</span><span class="sp"></span><span class="ctl">${seg}${nav(7)}</span></div>
   <div class="week">${days.map((d,i)=>{const di=iso(d),ts=on(di),n=ts.filter(t=>!t.abgesagt).length;
-    return`<section class="day${di===td?' today':''}"><button class="dhead" data-act="day" data-date="${di}"><b>${TAGE[i]}</b><span>${d.getDate()}. ${MON[d.getMonth()].slice(0,3)} · ${n} Kinder</span></button>${ts.map(t=>{const k=kind(t.kindId);
-      return`<button class="tm c${t.abgesagt?' off':''}" data-act="editTermin" data-id="${t.id}"><span class="t">${t.zeit}</span><b>${esc(kurz(k?.name||'?'))}</b></button>`}).join('')||'<p class="free">frei</p>'}<button class="add" data-act="newTermin" data-date="${di}">+ Termin</button></section>`}).join('')}</div>
-  <p class="sum">Diese Woche: ${wt.length} Termine · ${eur(wt.reduce((a,t)=>a+preisVon(t),0))}</p>`;
+    return`<section class="day${di===td?' today':''}"><button class="dhead" data-act="day" data-date="${di}"><b>${TAGE[i]}</b><span>${d.getDate()}. ${MON[d.getMonth()].slice(0,3)} · ${n} Kinder</span></button>${ts.map(t=>{const k=kind(t.kindId),p=String(k?.name||'?').split(' ');
+      return`<button class="tm${t.abgesagt?' off':''}" data-act="editTermin" data-id="${t.id}" title="${esc(k?.name||'')}"><span class="t">${t.zeit}</span><b>${esc(p.length>1?p[0]+' '+p[p.length-1][0]+'.':p[0])}</b></button>`}).join('')||'<p class="free">frei</p>'}<button class="add" data-act="newTermin" data-date="${di}">+ Termin</button></section>`}).join('')}</div>
+  <div class="acts" style="margin-top:14px"><span class="sum" style="margin:0">Diese Woche: ${wt.length} Termine · ${eur(wt.reduce((a,t)=>a+preisVon(t),0))}</span><span class="sp"></span>${ferienBtn}</div>`;
 };
 
-V.kinder=()=>`<div class="bar"><h2>Kinder</h2><span class="muted">${S.kinder.length} angelegt</span><span class="sp"></span><button class="btn" data-act="editKind">+ Kind anlegen</button></div>`+
-  (S.kinder.length?`<div class="cards">${[...S.kinder].sort((a,b)=>a.name.localeCompare(b.name)).map(k=>{const n=S.termine.filter(t=>t.kindId===k.id&&!t.abgesagt).length;
-  return`<button class="card" data-act="editKind" data-id="${k.id}"><b>${esc(k.name)}</b><span class="tag">${esc(k.bereich)}</span><span>${esc(k.empf)}<br>${esc(k.str)}<br>${esc(k.ort)}</span><span class="muted">${k.satz!==''&&k.satz!=null?eur(k.satz)+' / Std. (eigener Satz)':'Standard-Stundensatz'} · ${n} Termine</span></button>`}).join('')}</div>`:'<div class="empty">Tippe auf „+ Kind anlegen“, um das erste Kind mit Rechnungsadresse zu hinterlegen.</div>');
+function klist(){const q=ksuche.trim().toLowerCase();
+  const list=S.kinder.filter(k=>(kalle||k.aktiv!==false)&&(!q||(k.name+' '+k.empf+' '+k.ort).toLowerCase().includes(q))).sort((a,b)=>(b.aktiv!==false)-(a.aktiv!==false)||byName(a,b));
+  if(!list.length)return`<div class="empty">${S.kinder.length?'Kein Kind gefunden.':'Tippe auf „+ Kind anlegen“, um das erste Kind mit Rechnungsadresse zu hinterlegen.'}</div>`;
+  return`<div class="cards">${list.map(k=>{const f=festerTermin(k);return`<button class="card${k.aktiv===false?' end':''}" data-act="editKind" data-id="${k.id}"><b>${esc(k.name)}</b><span class="tag">${esc(k.bereich)}</span><span>${esc(k.empf)}<br>${esc(k.str)}<br>${esc(k.ort)}</span><span class="muted">${k.aktiv===false?'Training beendet':f?'Nächster Termin: '+f:'Kein Termin geplant'}${k.satz!==''&&k.satz!=null?' · eigener Satz '+eur(k.satz)+'/Std.':''}</span></button>`}).join('')}</div>`}
+V.kinder=()=>{const n=S.kinder.filter(k=>k.aktiv!==false).length,e=S.kinder.length-n;
+  return`<div class="bar"><h2>Kinder</h2><span class="muted">${n} im Training${e?` · ${e} beendet`:''}</span><span class="sp"></span><button class="btn" data-act="editKind">+ Kind anlegen</button></div>
+  <div class="tools"><input type="search" id="ksuche" placeholder="Suchen: Kind, Eltern oder Ort" value="${esc(ksuche)}" aria-label="Kinder suchen">${e?`<label class="chk"><input type="checkbox" data-chg="kalle"${kalle?' checked':''}> Beendete anzeigen</label>`:''}</div><div id="klist">${klist()}</div>`};
 
 V.rechnungen=()=>{
-  const p=pending(selMonth),kids=new Set(p.map(t=>t.kindId)),sum=p.reduce((a,t)=>a+preisVon(t),0);
+  const g=groupPending(selMonth),p=g.flatMap(x=>x.ts),sum=p.reduce((a,t)=>a+preisVon(t),0);
   const later=S.termine.filter(t=>t.datum.startsWith(selMonth)&&t.datum>today()&&!t.abgesagt&&!t.rechnungId).length;
   const ms=[];const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-11);for(let i=0;i<12;i++){ms.push(iso(d).slice(0,7));d.setMonth(d.getMonth()+1)}
   const inv=S.rechnungen.filter(r=>r.monat===selMonth).sort((a,b)=>a.nr.localeCompare(b.nr));
   let h=`<section class="panel"><h2>Monatsabschluss</h2><label style="max-width:280px">Monat<select data-chg="month">${ms.reverse().map(m=>`<option value="${m}"${m===selMonth?' selected':''}>${monatName(m)}</option>`).join('')}</select></label>
-  <div class="kpis"><div><span>Noch abzurechnen</span><b class="big-n">${eur(sum)}</b></div><div><span>Kinder</span><b class="big-n">${kids.size}</b></div><div><span>Termine</span><b class="big-n">${p.length}</b></div></div>
+  <div class="kpis"><div><span>Noch abzurechnen</span><b class="big-n">${eur(sum)}</b></div><div><span>Rechnungen</span><b class="big-n">${g.length}</b></div><div><span>Termine</span><b class="big-n">${p.length}</b></div></div>
   ${later?`<p class="note">${later} Termin${later>1?'e':''} in diesem Monat ${later>1?'liegen':'liegt'} noch in der Zukunft und ${later>1?'werden':'wird'} erst danach berechnet.</p>`:''}
-  <div class="acts"><button class="btn big" data-act="makeInv" ${p.length?'':'disabled'}>Alle Rechnungen erstellen</button>${inv.length?`<button class="btn big ghost" data-act="printMonth">Alle ${inv.length} drucken</button>`:''}</div>
-  ${inFrame?'<p class="muted" style="font-size:14px;margin:10px 0 0">In dieser Vorschau ist Drucken gesperrt. In der fertigen App auf dem iPad öffnet sich der Druckdialog (auch „Als PDF sichern“).</p>':''}</section>`;
-  const tbl=list=>`<table class="stack"><thead><tr><th>Nr.</th><th>Kind</th><th>Datum</th><th class="num">Betrag</th><th>Status</th><th></th></tr></thead><tbody>${list.map(r=>`<tr><td>${r.nr}</td><td>${esc(r.kname)}<small>${esc(r.empf)}</small></td><td>${de(r.datum)}</td><td class="num">${eur(r.summe)}</td><td>${status(r)}</td><td><div class="tacts"><button class="btn sm ghost" data-act="showInv" data-id="${r.id}">Ansehen</button><button class="btn sm ${r.bezahlt?'ghost':''}" data-act="paid" data-id="${r.id}">${r.bezahlt?'Wieder offen':'Bezahlt'}</button></div></td></tr>`).join('')}</tbody></table>`;
+  ${g.length?`<details><summary>Vorschau: wer bekommt was?</summary><table class="stack"><thead><tr><th>Kind</th><th>Termine</th><th class="num">Betrag</th></tr></thead><tbody>${g.map(({k,ts})=>`<tr><td>${esc(k.name)}<small>${esc(k.empf)}</small></td><td>${ts.map(t=>de(t.datum).slice(0,6)+(t.abgesagt?' (Ausfall)':'')).join(', ')}</td><td class="num">${eur(ts.reduce((a,t)=>a+preisVon(t),0))}</td></tr>`).join('')}</tbody></table></details>`:''}
+  <div class="acts" style="margin-top:12px"><button class="btn big" data-act="makeInv" ${g.length?'':'disabled'}>Alle ${g.length||''} Rechnungen erstellen</button>${inv.length?`<button class="btn big ghost" data-act="printMonth">Alle ${inv.length} drucken</button>`:''}</div>
+  ${printHint()}</section>`;
+  const tbl=list=>`<table class="stack"><thead><tr><th>Nr.</th><th>Kind</th><th>Datum</th><th class="num">Betrag</th><th>Status</th><th></th></tr></thead><tbody>${list.map(r=>`<tr><td>${r.nr}</td><td>${esc(r.kname)}<small>${esc(r.empf)}</small></td><td>${de(r.datum)}</td><td class="num">${eur(r.summe)}</td><td>${status(r)}</td><td><div class="tacts"><button class="btn sm ghost" data-act="showInv" data-id="${r.id}">Ansehen</button>${overdue(r)?`<button class="btn sm danger" data-act="remind" data-id="${r.id}">Erinnern</button>`:''}<button class="btn sm ${r.bezahlt?'ghost':''}" data-act="paid" data-id="${r.id}">${r.bezahlt?'Wieder offen':'Bezahlt'}</button></div></td></tr>`).join('')}</tbody></table>`;
   h+=`<h3>Rechnungen ${monatName(selMonth)}</h3>`+(inv.length?tbl(inv):'<p class="muted">Für diesen Monat gibt es noch keine Rechnungen.</p>');
-  const other=S.rechnungen.filter(r=>r.monat!==selMonth&&!r.bezahlt).sort((a,b)=>a.nr.localeCompare(b.nr));
-  if(other.length)h+=`<h3>Offen aus anderen Monaten</h3>`+tbl(other);
+  const other=S.rechnungen.filter(r=>r.monat!==selMonth&&!r.bezahlt).sort((a,b)=>a.nr.localeCompare(b.nr)),od=S.rechnungen.filter(overdue);
+  if(other.length)h+=`<div class="acts" style="margin-top:26px"><h3 style="margin:0">Offen aus anderen Monaten</h3><span class="sp"></span>${od.length?`<button class="btn danger" data-act="remindAll">Erinnerung an alle ${od.length} Überfälligen drucken</button>`:''}</div>`+tbl(other);
   return h;
 };
+const printHint=()=>inFrame?'<p class="muted" style="font-size:14px;margin:10px 0 0">In dieser Vorschau ist Drucken gesperrt. In der fertigen App öffnet sich der Druckdialog (auch „Als PDF sichern“).</p>':'';
 
 V.zahlungen=()=>{
   const open=S.rechnungen.filter(r=>!r.bezahlt).sort((a,b)=>a.nr.localeCompare(b.nr));
   let h=`<div class="bar"><h2>Zahlungseingänge prüfen</h2></div><section class="panel steps"><ol><li>Im Online-Banking die Umsätze als <b>CSV-Datei</b> exportieren.</li><li>Die Datei hier auswählen.</li><li>Treffer kurz prüfen und übernehmen.</li></ol>
-  <div class="acts"><label class="btn big" style="margin:0">CSV-Datei auswählen<input type="file" accept=".csv,text/csv,text/plain" data-chg="csv" hidden></label>${open.length?'<button class="btn big ghost" data-act="sampleCsv">Mit Beispiel-Kontoauszug testen</button>':''}</div>
+  <div class="acts"><label class="btn big" style="margin:0">CSV-Datei auswählen<input type="file" accept=".csv,text/csv,text/plain" data-chg="csv" hidden></label>${open.length&&S.demo?'<button class="btn big ghost" data-act="sampleCsv">Mit Beispiel-Kontoauszug testen</button>':''}</div>
   <details><summary>Oder Inhalt einfügen</summary><textarea id="csvtext" placeholder="Inhalt der CSV-Datei hier einfügen"></textarea><div class="acts"><button class="btn ghost" data-act="csvText">Prüfen</button></div></details></section>`;
   if(match){
-    if(match.err)h+=`<p class="note">${esc(match.err)}</p>`;
+    if(match.err)h+=`<p class="warn">${esc(match.err)}</p>`;
     else{const lab={sicher:'Rechnungsnr. & Betrag passen',abweichung:'Rechnungsnr. passt, Betrag weicht ab',vorschlag:'Vorschlag: Betrag & Name passen'};
       h+=`<h3>Gefundene Zahlungen</h3>${match.out.length?`<table class="stack"><thead><tr><th>Übernehmen</th><th>Eingang</th><th class="num">Betrag</th><th>Rechnung</th><th>Hinweis</th></tr></thead><tbody>${match.out.map((m,i)=>{const rs=m.ids.map(id=>S.rechnungen.find(r=>r.id===id));
       return`<tr><td><label class="chk" style="margin:0"><input type="checkbox" data-i="${i}" ${m.typ==='sicher'?'checked':''} aria-label="Zahlung übernehmen"></label></td><td>${esc(m.name||'–')}<small>${esc(m.datum)} · ${esc(m.zweck)}</small></td><td class="num">${eur(m.betrag)}</td><td>${rs.map(r=>`${r.nr} · ${esc(r.kname)} (${eur(r.summe)})`).join('<br>')}</td><td><span class="pill ${m.typ==='sicher'?'ok':m.typ==='abweichung'?'due':'open'}">${lab[m.typ]}</span></td></tr>`}).join('')}</tbody></table>
@@ -277,77 +308,107 @@ V.zahlungen=()=>{
 };
 
 V.einstellungen=()=>{const s=S.settings,f=(n,l,t='text',x='')=>`<label>${l}<input type="${t}" name="${n}" value="${esc(s[n])}" ${x}></label>`;
-  return`<div class="bar"><h2>Einstellungen</h2></div><form id="settings" class="panel">
+  return`<div class="bar"><h2>Einstellungen</h2><span class="sp"></span><span class="muted" style="font-size:14px">Änderungen werden automatisch gespeichert.</span></div><form id="settings" class="panel">
   <fieldset><legend>Briefkopf</legend><div class="row">${f('name','Name')}${f('titel','Zusatz unter dem Namen')}</div><div class="row">${f('str','Straße & Nr.')}${f('ort','PLZ & Ort')}</div><div class="row">${f('tel','Telefon','tel')}${f('mail','E-Mail','email')}</div></fieldset>
   <fieldset><legend>Bankverbindung</legend><div class="row">${f('iban','IBAN')}${f('bic','BIC')}${f('bank','Bank')}</div></fieldset>
-  <fieldset><legend>Steuer &amp; Rechnung</legend>${f('stnr','Steuernummer')}<label>Hinweis auf der Rechnung<textarea name="hinweis">${esc(s.hinweis)}</textarea></label>
+  <fieldset><legend>Steuer &amp; Rechnung</legend>${f('stnr','Steuernummer')}${s.stnr?'':'<p class="warn">Die Steuernummer muss auf Rechnungen über 250 € stehen. Bitte eintragen.</p>'}<label>Hinweis auf der Rechnung<textarea name="hinweis">${esc(s.hinweis)}</textarea></label>
   <div class="acts" style="margin:-4px 0 14px"><button type="button" class="btn sm ghost" data-act="hinweis" data-k="k19">Kleinunternehmerin (§ 19)</button><button type="button" class="btn sm ghost" data-act="hinweis" data-k="n21">Steuerfrei (§ 4 Nr. 21)</button></div>
   <div class="row">${f('ziel','Zahlungsziel (Tage)','number','min="0" inputmode="numeric"')}${f('nrNext','Nächste Rechnungsnummer','number','min="1" inputmode="numeric"')}</div></fieldset>
-  <fieldset><legend>Leistungen &amp; Preise</legend>${S.leistungen.map(l=>`<div class="lrow"><label>Bezeichnung<input name="l_name_${l.id}" value="${esc(l.name)}" required></label><label>Abrechnung<select name="l_art_${l.id}"><option value="stunde"${l.art==='stunde'?' selected':''}>pro Stunde</option><option value="pauschal"${l.art==='pauschal'?' selected':''}>pauschal</option></select></label><label>Preis €<input name="l_preis_${l.id}" type="number" step="0.5" min="0" inputmode="decimal" value="${l.preis}"></label>${S.termine.some(t=>t.lid===l.id)?'<span></span>':`<button type="button" class="btn danger sm" data-act="delL" data-id="${l.id}" aria-label="Leistung entfernen">✕</button>`}</div>`).join('')}
-  <button type="button" class="btn ghost sm" data-act="addL">+ Leistung</button><p class="muted" style="font-size:14px">Ein eigener Stundensatz pro Kind lässt sich beim Kind eintragen.</p></fieldset>
-  <div class="acts"><button class="btn big">Speichern</button></div></form>
-  <section class="panel"><h2>Datensicherung</h2><p class="muted">Alle Daten liegen nur auf diesem Gerät. Einmal im Monat eine Sicherung speichern (z. B. in iCloud Drive).</p>
-  <div class="acts"><button class="btn ghost" data-act="backup">Sicherung speichern</button><label class="btn ghost" style="margin:0">Sicherung laden<input type="file" accept=".json,application/json" data-chg="restore" hidden></label>${S.demo?'<button class="btn danger" data-act="clearDemo">Beispieldaten löschen</button>':''}</div></section>`;
+  <fieldset><legend>Leistungen &amp; Preise</legend>${S.leistungen.map(l=>`<div class="lrow"><label>Bezeichnung<input name="l_name_${l.id}" value="${esc(l.name)}" required></label><label>Abrechnung<select name="l_art_${l.id}"><option value="stunde"${l.art==='stunde'?' selected':''}>Preis pro Stunde</option><option value="pauschal"${l.art==='pauschal'?' selected':''}>Festpreis pro Termin</option></select></label><label>Preis €<input name="l_preis_${l.id}" type="number" step="0.5" min="0" inputmode="decimal" value="${l.preis}"></label><label>Dauer Min.<input name="l_dauer_${l.id}" type="number" step="5" min="5" inputmode="numeric" value="${l.dauer}"></label>${S.termine.some(t=>t.lid===l.id)?'<span></span>':`<button type="button" class="btn danger sm" data-act="delL" data-id="${l.id}" aria-label="Leistung entfernen">✕</button>`}</div>`).join('')}
+  <button type="button" class="btn ghost sm" data-act="addL">+ Leistung</button><p class="muted" style="font-size:14px">Ein eigener Stundensatz pro Kind lässt sich beim Kind eintragen. Neue Kinder bekommen als ersten Termin automatisch den Eingangstest vorgeschlagen.</p></fieldset>
+  <fieldset><legend>Kalender</legend><div class="row">${f('start','Erster Termin des Tages ab','time')}</div><label class="chk"><input type="checkbox" name="ausfall"${s.ausfall?' checked':''}> Bei kurzfristigen Absagen fragen, ob ein Ausfallhonorar berechnet wird</label></fieldset>
+  </form>
+  <section class="panel"><h2>Datensicherung</h2><p class="muted">Alle Daten liegen nur auf diesem Gerät. Einmal im Monat eine Sicherung speichern, z. B. in iCloud Drive oder per E-Mail an sich selbst.${S.lastBackup?` Letzte Sicherung: ${de(S.lastBackup)}.`:''}</p>
+  <div class="acts"><button class="btn" data-act="backup">Sicherung speichern</button><label class="btn ghost" style="margin:0">Sicherung laden<input type="file" accept=".json,application/json" data-chg="restore" hidden></label>${S.demo?'<button class="btn danger" data-act="clearDemo">Beispieldaten löschen</button>':''}</div></section>`;
 };
 
 function render(){
   document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+tab));
   $('#apptitle').innerHTML=esc(S.settings.name||'Lerntraining')+' <small>Termine &amp; Rechnungen</small>';
-  $('#main').innerHTML=(S.demo?'<div class="demo"><span>Das sind <b>Beispieldaten</b> zum Ausprobieren.</span><span class="sp"></span><button class="btn sm danger" data-act="clearDemo">Löschen &amp; eigene Daten eingeben</button></div>':'')+V[tab]();
+  let b='';
+  if(S.demo)b='<div class="banner"><span>Das sind <b>Beispieldaten</b> zum Ausprobieren.</span><span class="sp"></span><button class="btn sm danger" data-act="clearDemo">Löschen &amp; eigene Daten eingeben</button></div>';
+  else if(S.kinder.length&&tab!=='einstellungen'){const ab=S.lastBackup?daysBetween(S.lastBackup,today()):999;if(ab>=30)b=`<div class="banner info"><span>Letzte Datensicherung: <b>${S.lastBackup?'vor '+ab+' Tagen':'noch nie'}</b>.</span><span class="sp"></span><button class="btn sm" data-act="backup">Jetzt sichern</button></div>`}
+  $('#main').innerHTML=b+V[tab]();
 }
-function route(){const t=location.hash.slice(1);tab=V[t]?t:'kalender';match=tab==='zahlungen'?match:null;render()}
+function route(){const t=location.hash.slice(1);tab=V[t]?t:'kalender';match=tab==='zahlungen'?match:null;render();scrollTo(0,0)}
 addEventListener('hashchange',route);
 
-let onSub=null;
-function modal(html,sub,wide){$('#mbox').className='mbox'+(wide?' wide':'');$('#mbox').innerHTML=html;onSub=sub||null;$('#modal').hidden=false;const f=$('#mbox input,#mbox select');if(f&&!wide)f.focus()}
+let onSub=null,askBtns=[],tt;
+function modal(html,sub,wide){$('#mbox').className='mbox'+(wide?' wide':'');$('#mbox').innerHTML=html;onSub=sub||null;$('#modal').hidden=false;$('#modal').scrollTop=0}
 function close(){$('#modal').hidden=true;$('#mbox').innerHTML='';onSub=null}
-function ask(msg,btns){modal(`<h3>${msg}</h3><div class="acts">${btns.map((b,i)=>`<button class="btn ${b.cls||''}" data-act="askBtn" data-i="${i}">${b.label}</button>`).join('')}</div>`);askBtns=btns}
-let askBtns=[];
-let tt;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),3200)}
+function ask(msg,btns,sub){modal(`<h3>${msg}</h3>${sub?`<p class="muted">${sub}</p>`:''}<div class="acts">${btns.map((b,i)=>`<button class="btn ${b.cls||''}" data-act="askBtn" data-i="${i}">${b.label}</button>`).join('')}</div>`);askBtns=btns}
+function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),3200)}
 $('#modal').addEventListener('click',e=>{if(e.target.id==='modal')close()});
 addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#modal').hidden)close()});
 
 function terminForm(t,isNew){
-  if(!S.kinder.length){toast('Bitte zuerst ein Kind anlegen.');location.hash='#kinder';return}
-  const sel=(n,o,v)=>`<select name="${n}">${o.map(([a,b])=>`<option value="${a}"${a===v?' selected':''}>${esc(b)}</option>`).join('')}</select>`;
-  modal(`<h3>${isNew?'Neuer Termin':'Termin bearbeiten'}</h3><form id="f">
-  <label>Kind${sel('kindId',[...S.kinder].sort((a,b)=>a.name.localeCompare(b.name)).map(k=>[k.id,k.name]),t.kindId)}</label>
+  if(!S.kinder.some(k=>k.aktiv!==false)){toast('Bitte zuerst ein Kind anlegen.');location.hash='#kinder';return}
+  const ks=S.kinder.filter(k=>k.aktiv!==false||k.id===t.kindId).sort(byName);
+  const lsel=`<select name="lid">${S.leistungen.map(l=>`<option value="${l.id}"${l.id===t.lid?' selected':''}>${esc(l.name)}</option>`).join('')}</select>`;
+  const stat=t.abgesagt?(t.grund==='ferien'?'ferien':t.ausfall?'ausfall':'abgesagt'):'ok';
+  const opts=[['ok','Findet statt'],['abgesagt','Abgesagt – nicht berechnen'],...(S.settings.ausfall||t.ausfall?[['ausfall','Abgesagt – Ausfallhonorar berechnen']]:[]),['ferien','Ferien / frei']];
+  modal(`<h3>${isNew?'Neuer Termin':'Termin bearbeiten'}</h3><form id="f" data-new="${isNew?1:''}">
+  <label>Kind<select name="kindId" required>${isNew&&!t.kindId?'<option value="">Kind wählen …</option>':''}${ks.map(k=>`<option value="${k.id}"${k.id===t.kindId?' selected':''}>${esc(k.name)}</option>`).join('')}</select></label>
   <div class="row"><label>Datum<input type="date" name="datum" value="${t.datum}" required></label><label>Uhrzeit<input type="time" name="zeit" value="${t.zeit}" required></label></div>
-  <div class="row"><label>Leistung${sel('lid',S.leistungen.map(l=>[l.id,l.name]),t.lid)}</label><label>Dauer (Min.)<input type="number" name="dauer" min="5" step="5" inputmode="numeric" value="${t.dauer}" required></label></div>
-  ${isNew?`<label class="chk"><input type="checkbox" name="rep" checked> Jede Woche wiederholen</label><label>bis einschließlich<input type="date" name="bis" value="${iso(addDays(pISO(t.datum),7*12))}"></label>`:`<label class="chk"><input type="checkbox" name="abgesagt"${t.abgesagt?' checked':''}> Abgesagt (wird nicht berechnet)</label>`}
+  <div class="row"><label>Leistung${lsel}</label><label>Dauer (Min.)<input type="number" name="dauer" min="5" step="5" inputmode="numeric" value="${t.dauer}" required></label></div>
+  ${isNew?`<label class="chk"><input type="checkbox" name="rep"${t.rep===false?'':' checked'}> Jede Woche zur gleichen Zeit wiederholen</label><label>bis einschließlich<input type="date" name="bis" value="${iso(addDays(pISO(t.datum),7*16))}"></label>`:`<label>Status<select name="status">${opts.map(([v,l])=>`<option value="${v}"${v===stat?' selected':''}>${l}</option>`).join('')}</select></label>`}
   ${t.rechnungId?'<p class="note">Dieser Termin ist schon abgerechnet. Änderungen ändern die Rechnung nicht mehr.</p>':''}
   <div class="acts">${!isNew&&!t.rechnungId?`<button type="button" class="btn danger" data-act="delTermin" data-id="${t.id}">Löschen</button>`:''}<span class="sp"></span><button type="button" class="btn ghost" data-act="close">Abbrechen</button><button class="btn">Speichern</button></div></form>`,fd=>{
-    const v=Object.fromEntries(fd);const base={kindId:v.kindId,zeit:v.zeit,dauer:+v.dauer||60,lid:v.lid};
-    if(isNew){const serie=uid();let d=pISO(v.datum);const bis=v.rep&&v.bis?pISO(v.bis):d;let n=0;
-      while(d<=bis&&n<80){S.termine.push({id:uid(),...base,datum:iso(d),abgesagt:false,serie,rechnungId:null});d=addDays(d,7);n++}
-      toast(n>1?`${n} Termine angelegt`:'Termin angelegt');
-    }else{Object.assign(t,base,{datum:v.datum,abgesagt:!!v.abgesagt});toast('Gespeichert')}
+    const v=Object.fromEntries(fd);if(!v.kindId){toast('Bitte ein Kind wählen');return}
+    const base={kindId:v.kindId,zeit:v.zeit,dauer:+v.dauer||45,lid:v.lid};
+    if(isNew){const serie=uid();let d=pISO(v.datum);const bis=v.rep&&v.bis?pISO(v.bis):d;let n=0;const firstTest=leist(v.lid)?.art==='pauschal'&&v.rep;
+      while(d<=bis&&n<80){const std=firstTest&&n>0?(S.leistungen.find(l=>l.art==='stunde')||leist(v.lid)):null;
+        S.termine.push({id:uid(),...base,...(std?{lid:std.id,dauer:std.dauer}:{}),datum:iso(d),abgesagt:false,ausfall:false,grund:null,serie,rechnungId:null});d=addDays(d,7);n++}
+      toast(n>1?`${n} Termine angelegt${firstTest?' (erster als '+leist(v.lid).name+')':''}`:'Termin angelegt');curDay=pISO(v.datum);
+    }else{Object.assign(t,base,{datum:v.datum,abgesagt:v.status!=='ok',ausfall:v.status==='ausfall',grund:v.status==='ok'?null:v.status==='ferien'?'ferien':'abgesagt'});toast('Gespeichert')}
     save();close();render();
   });
 }
+function newTerminDefaults(date,kindId){
+  const day=S.termine.filter(x=>x.datum===date).sort((a,b)=>a.zeit.localeCompare(b.zeit)),last=day[day.length-1];
+  const zeit=last?addMin(last.zeit,last.dauer):S.settings.start||'14:00';
+  const neu=kindId&&!S.termine.some(x=>x.kindId===kindId);
+  const l=(neu&&S.leistungen.find(l=>l.art==='pauschal'))||S.leistungen.find(l=>l.art==='stunde')||S.leistungen[0];
+  return{kindId:kindId||'',datum:date,zeit,dauer:l.dauer,lid:l.id};
+}
 function kindForm(k){
-  const isNew=!k;k=k||{name:'',bereich:BEREICHE[0],empf:'',str:'',ort:'',mail:'',satz:'',notiz:''};
+  const isNew=!k;k=k||{name:'',bereich:BEREICHE[0],empf:'',str:'',ort:'',mail:'',satz:'',notiz:'',aktiv:true};
   const hasInv=!isNew&&S.rechnungen.some(r=>r.kindId===k.id);
   modal(`<h3>${isNew?'Kind anlegen':esc(k.name)}</h3><form id="f">
-  <div class="row"><label>Name des Kindes<input name="name" value="${esc(k.name)}" required></label><label>Bereich<select name="bereich">${BEREICHE.map(b=>`<option${b===k.bereich?' selected':''}>${b}</option>`).join('')}</select></label></div>
-  <label>Rechnung an (z. B. Eltern)<input name="empf" value="${esc(k.empf)}" placeholder="Familie Müller" required></label>
-  <div class="row"><label>Straße &amp; Nr.<input name="str" value="${esc(k.str)}" required></label><label>PLZ &amp; Ort<input name="ort" value="${esc(k.ort)}" required></label></div>
-  <div class="row"><label>E-Mail (optional)<input type="email" name="mail" value="${esc(k.mail)}"></label><label>Eigener Stundensatz € (leer = Standard)<input type="number" step="0.5" min="0" inputmode="decimal" name="satz" value="${esc(k.satz)}"></label></div>
+  <div class="row"><label>Name des Kindes<input name="name" value="${esc(k.name)}" required autocomplete="off"></label><label>Bereich<select name="bereich">${BEREICHE.map(b=>`<option${b===k.bereich?' selected':''}>${b}</option>`).join('')}</select></label></div>
+  <label>Rechnung an (z. B. Eltern)<input name="empf" value="${esc(k.empf)}" placeholder="Familie Müller" required autocomplete="off"></label>
+  <div class="row"><label>Straße &amp; Nr.<input name="str" value="${esc(k.str)}" required autocomplete="off"></label><label>PLZ &amp; Ort<input name="ort" value="${esc(k.ort)}" required autocomplete="off"></label></div>
+  <div class="row"><label>E-Mail (optional)<input type="email" name="mail" value="${esc(k.mail)}" autocomplete="off"></label><label>Eigener Stundensatz € (leer = Standard)<input type="number" step="0.5" min="0" inputmode="decimal" name="satz" value="${esc(k.satz)}"></label></div>
   <label>Notiz<textarea name="notiz">${esc(k.notiz)}</textarea></label>
+  ${isNew?'':`<label class="chk"><input type="checkbox" name="aktiv"${k.aktiv!==false?' checked':''}> Training läuft noch</label>`}
   <div class="acts">${!isNew&&!hasInv?`<button type="button" class="btn danger" data-act="delKind" data-id="${k.id}">Löschen</button>`:''}<span class="sp"></span><button type="button" class="btn ghost" data-act="close">Abbrechen</button><button class="btn">Speichern</button></div></form>`,fd=>{
-    const v=Object.fromEntries(fd);if(isNew)S.kinder.push({id:uid(),...v});else Object.assign(k,v);save();close();render();toast('Gespeichert');
+    const v=Object.fromEntries(fd);
+    if(isNew){const nk={id:uid(),...v,aktiv:true};S.kinder.push(nk);save();render();
+      ask(`${esc(nk.name)} ist angelegt.`,[{label:'Festen Termin eintragen',fn:()=>terminForm(newTerminDefaults(iso(curDay),nk.id),true)},{label:'Später',cls:'ghost'}],'Soll gleich der wöchentliche Termin eingetragen werden? Der erste Termin wird als Eingangstest vorgeschlagen.');return}
+    const wasActive=k.aktiv!==false;Object.assign(k,v,{aktiv:!!v.aktiv});save();render();
+    const fut=S.termine.filter(t=>t.kindId===k.id&&t.datum>today()&&!t.rechnungId);
+    if(wasActive&&!k.aktiv&&fut.length)ask(`${fut.length} zukünftige Termine von ${esc(k.name)} löschen?`,[{label:'Ja, löschen',cls:'danger',fn:()=>{S.termine=S.termine.filter(t=>!fut.includes(t));save();render();toast('Termine gelöscht')}},{label:'Behalten',cls:'ghost'}]);
+    else{close();toast('Gespeichert')}
   });
 }
+function letter(r,title,meta,body){const s=S.settings;
+  return`<article class="inv"><i class="falz f1"></i><i class="falz lo"></i><i class="falz f2"></i>
+  <header class="ih"><div><div class="iname">${esc(s.name)}</div><div>${esc(s.titel)}</div></div><div class="ir">${esc(s.str)}<br>${esc(s.ort)}${s.tel?'<br>Tel. '+esc(s.tel):''}${s.mail?'<br>'+esc(s.mail):''}</div></header>
+  <div class="ifield"><div class="iadr"><div class="snd">${esc(s.name)} · ${esc(s.str)} · ${esc(s.ort)}</div>${esc(r.empf)}<br>${esc(r.str)}<br>${esc(r.ort)}</div><table class="im">${meta.map(([a,b])=>`<tr><td>${a}</td><td>${b}</td></tr>`).join('')}</table></div>
+  <div class="ibody"><h1>${title}</h1>${body}</div>
+  <footer class="if">${[s.name,s.iban&&'IBAN '+s.iban,s.bic&&'BIC '+s.bic,s.bank,s.stnr&&'Steuernr. '+s.stnr].filter(Boolean).map(esc).join(' · ')}</footer></article>`}
 function invHTML(r){const s=S.settings;
-  return`<article class="inv"><div class="ih"><div><div class="iname">${esc(s.name)}</div><div>${esc(s.titel)}</div></div><div class="ir">${esc(s.str)}<br>${esc(s.ort)}${s.tel?'<br>Tel. '+esc(s.tel):''}${s.mail?'<br>'+esc(s.mail):''}</div></div>
-  <div class="snd">${esc(s.name)} · ${esc(s.str)} · ${esc(s.ort)}</div><div class="ia">${esc(r.empf)}<br>${esc(r.str)}<br>${esc(r.ort)}</div>
-  <table class="im"><tr><td>Rechnungsnummer</td><td><b>${r.nr}</b></td></tr><tr><td>Rechnungsdatum</td><td>${de(r.datum)}</td></tr><tr><td>Leistungszeitraum</td><td>${monatName(r.monat)}</td></tr></table>
-  <h1>Rechnung</h1><p>für das Lerntraining von <b>${esc(r.kname)}</b> (${esc(r.bereich)}) im ${monatName(r.monat)}:</p>
-  <table class="ip"><thead><tr><th>Datum</th><th>Leistung</th><th class="num">Betrag</th></tr></thead><tbody>${r.pos.map(p=>`<tr><td>${de(p.datum)}</td><td>${esc(p.text)}</td><td class="num">${eur(p.betrag)}</td></tr>`).join('')}</tbody><tfoot><tr><td colspan="2">Gesamtbetrag</td><td class="num">${eur(r.summe)}</td></tr></tfoot></table>
-  <p>${esc(s.hinweis)}</p><p>Bitte überweisen Sie den Betrag bis zum <b>${de(r.faellig)}</b> und geben Sie im Verwendungszweck die Rechnungsnummer <b>${r.nr}</b> an.</p><p>Vielen Dank!<br>${esc(s.name)}</p>
-  <div class="if">${[s.name,s.iban&&'IBAN '+s.iban,s.bic&&'BIC '+s.bic,s.bank,s.stnr&&'Steuernr. '+s.stnr].filter(Boolean).map(esc).join(' · ')}</div></article>`}
-function doPrint(list){$('#print').innerHTML=list.map(invHTML).join('');try{window.print()}catch(e){}if(inFrame)toast('In der Vorschau ist Drucken gesperrt – in der fertigen App öffnet sich hier der Druckdialog.')}
-function showInv(r){modal(`<h3>Rechnung ${r.nr} · ${esc(r.kname)}</h3><div class="sheetwrap" id="sw">${invHTML(r)}</div><div class="acts"><button class="btn danger" data-act="storno" data-id="${r.id}">Stornieren</button><span class="sp"></span><button class="btn ghost" data-act="close">Schließen</button><button class="btn" data-act="printOne" data-id="${r.id}">Drucken</button></div>`,null,true);
+  return letter(r,'Rechnung',[['Rechnungsnummer','<b>'+r.nr+'</b>'],['Rechnungsdatum',de(r.datum)],['Leistungszeitraum',monatName(r.monat)]],
+  `<p>Für das Lerntraining von <b>${esc(r.kname)}</b> (${esc(r.bereich)}) im ${monatName(r.monat)} berechne ich Ihnen:</p>
+  <table class="ip"><thead><tr><th>Datum</th><th>Leistung</th><th class="num">Betrag</th></tr></thead><tbody>${r.pos.map(p=>`<tr><td>${WT[pISO(p.datum).getDay()]} ${de(p.datum)}</td><td>${esc(p.text)}</td><td class="num">${eur(p.betrag)}</td></tr>`).join('')}</tbody><tfoot><tr><td colspan="2">Gesamtbetrag</td><td class="num">${eur(r.summe)}</td></tr></tfoot></table>
+  <p>${esc(s.hinweis)}</p><p>Bitte überweisen Sie den Betrag bis zum <b>${de(r.faellig)}</b> und geben Sie im Verwendungszweck die Rechnungsnummer <b>${r.nr}</b> an.</p><p>Vielen Dank!<br>${esc(s.name)}</p>`)}
+function remHTML(r){const s=S.settings,bis=de(iso(addDays(new Date(),10)));
+  return letter(r,'Zahlungserinnerung',[['Datum',de(today())],['Rechnungsnummer','<b>'+r.nr+'</b>']],
+  `<p>Guten Tag,</p><p>im Alltag rutscht so etwas schnell einmal durch: Für die folgende Rechnung habe ich noch keinen Zahlungseingang gefunden.</p>
+  <table class="ip"><thead><tr><th>Rechnung</th><th>vom</th><th>Leistung</th><th class="num">Betrag</th></tr></thead><tbody><tr><td>${r.nr}</td><td>${de(r.datum)}</td><td>Lerntraining ${esc(r.kname)}, ${monatName(r.monat)}</td><td class="num">${eur(r.summe)}</td></tr></tbody></table>
+  <p>Bitte überweisen Sie den Betrag bis zum <b>${bis}</b> und geben Sie die Rechnungsnummer <b>${r.nr}</b> an. Falls Sie bereits bezahlt haben, betrachten Sie dieses Schreiben bitte als gegenstandslos.</p><p>Herzliche Grüße<br>${esc(s.name)}</p>`)}
+function doPrint(html){$('#print').innerHTML=html;try{window.print()}catch(e){}if(inFrame)toast('In der Vorschau ist Drucken gesperrt – in der fertigen App öffnet sich hier der Druckdialog.')}
+function showInv(r){modal(`<h3>Rechnung ${r.nr} · ${esc(r.kname)}</h3><div class="sheetwrap" id="sw">${invHTML(r)}</div><div class="acts"><button class="btn danger" data-act="storno" data-id="${r.id}">Stornieren</button><span class="sp"></span>${overdue(r)?`<button class="btn ghost" data-act="remind" data-id="${r.id}">Erinnerung drucken</button>`:''}<button class="btn ghost" data-act="close">Schließen</button><button class="btn" data-act="printOne" data-id="${r.id}">Drucken</button></div>${standalone?'<p class="muted" style="font-size:14px">Falls sich kein Druckfenster öffnet: die App einmal in Safari öffnen und dort drucken.</p>':''}`,null,true);
   const sw=$('#sw'),inv=sw.querySelector('.inv');inv.style.zoom=Math.min(1,(sw.clientWidth-16)/794)}
 
 function parseCSV(txt){txt=txt.replace(/^﻿/,'');const head=txt.split(/\r?\n/).slice(0,20).join('\n');const cnt=c=>head.split(c).length;const d=[';','\t',','].sort((a,b)=>cnt(b)-cnt(a))[0];
@@ -381,50 +442,76 @@ function sampleCsv(){const o=S.rechnungen.filter(r=>!r.bezahlt);const d=de(today
   const L=['Buchungstag;Valutadatum;Name Zahlungsbeteiligter;Verwendungszweck;Betrag (€)',`${d};${d};Stadtwerke;Abschlag Strom;-58,00`];
   o.forEach((r,i)=>{if(i===0)L.push(`${d};${d};${r.empf};Rechnung ${r.nr};${f(r.summe)}`);else if(i===1)L.push(`${d};${d};${r.empf.replace('Familie ','')};Lerntraining ${r.kname.split(' ')[0]};${f(r.summe)}`);else L.push(`${d};${d};${r.empf};RE ${r.nr.replace('-','')};${f(r.summe)}`)});
   L.push(`${d};${d};Krankenkasse;Erstattung;23,40`);return L.join('\n')}
+async function backup(){
+  const data=JSON.stringify(S),name=`lerntraining-sicherung-${today()}.json`;let ok=false;
+  try{const file=new File([data],name,{type:'application/json'});if(navigator.canShare&&navigator.canShare({files:[file]})){await navigator.share({files:[file],title:'Lerntraining Sicherung'});ok=true}}catch(e){if(e&&e.name==='AbortError')return}
+  if(!ok){try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'application/json'}));a.download=name;document.body.append(a);a.click();a.remove();ok=!inFrame}catch(e){}}
+  if(inFrame){toast('In der Vorschau kann keine Datei gespeichert werden.');return}
+  if(ok){S.lastBackup=today();save();render();toast('Sicherung gespeichert')}
+}
+function markFerien(von,bis,undo){let n=0;S.termine.forEach(t=>{if(t.datum>=von&&t.datum<=bis&&!t.rechnungId){if(undo&&t.grund==='ferien'){t.abgesagt=false;t.grund=null;n++}else if(!undo&&!t.abgesagt){t.abgesagt=true;t.ausfall=false;t.grund='ferien';n++}}});save();close();render();toast(undo?`${n} Termine wieder aktiv`:`${n} Termine als Ferien markiert`)}
 
 const A={
   close,
   askBtn:d=>{const b=askBtns[+d.i];close();b&&b.fn&&b.fn()},
-  nav:d=>{curDay=+d.d?addDays(curDay,+d.d):new Date();render()},
+  nav:d=>{const n=+d.d;if(!n)curDay=workday(new Date());else{curDay=addDays(curDay,n);if(curDay.getDay()===0)curDay=addDays(curDay,n>0?1:-1)}render()},
   day:d=>{curDay=pISO(d.date);calView='tag';render()},
   view:d=>{calView=d.v;render()},
-  abg:d=>{const t=S.termine.find(x=>x.id===d.id);t.abgesagt=!t.abgesagt;save();render()},
-  newTermin:d=>{const last=[...S.termine].reverse()[0];terminForm({kindId:last?.kindId||S.kinder[0]?.id,datum:d.date,zeit:'15:00',dauer:60,lid:(S.leistungen.find(l=>l.art==='stunde')||S.leistungen[0]).id},true)},
+  abg:d=>{const t=S.termine.find(x=>x.id===d.id),k=kind(t.kindId);
+    const set=a=>{t.abgesagt=true;t.ausfall=a;t.grund='abgesagt';save();render();toast(a?'Abgesagt – Ausfall wird berechnet':'Als abgesagt markiert')};
+    if(t.abgesagt){t.abgesagt=false;t.ausfall=false;t.grund=null;save();render();return}
+    if(S.settings.ausfall)ask(`${esc(k?.name||'')} hat abgesagt`,[{label:'Nicht berechnen',fn:()=>set(false)},{label:'Ausfallhonorar berechnen',cls:'danger',fn:()=>set(true)},{label:'Abbrechen',cls:'ghost'}],'Bei kurzfristigen Absagen kann der Termin trotzdem berechnet werden.');else set(false)},
+  ferien:()=>{const v=iso(curDay),b=iso(addDays(curDay,13));modal(`<h3>Ferien oder freie Tage</h3><p class="muted">Alle Termine in diesem Zeitraum werden als „Ferien“ markiert und nicht berechnet. Die wöchentlichen Termine laufen danach normal weiter.</p><form id="f"><div class="row"><label>Von<input type="date" name="von" value="${v}" required></label><label>Bis einschließlich<input type="date" name="bis" value="${b}" required></label></div><p class="note" id="fcount"></p><div class="acts"><button type="button" class="btn ghost" data-act="ferienUndo">Ferien wieder aufheben</button><span class="sp"></span><button type="button" class="btn ghost" data-act="close">Abbrechen</button><button class="btn">Als Ferien eintragen</button></div></form>`,fd=>{const v=Object.fromEntries(fd);markFerien(v.von,v.bis,false)});ferienCount()},
+  ferienUndo:()=>{const f=$('#f');markFerien(f.von.value,f.bis.value,true)},
+  newTermin:d=>terminForm(newTerminDefaults(d.date,''),true),
   editTermin:d=>{const t=S.termine.find(x=>x.id===d.id);t&&terminForm(t,false)},
   delTermin:d=>{const t=S.termine.find(x=>x.id===d.id);const del=all=>{S.termine=S.termine.filter(x=>x.id!==t.id&&!(all&&t.serie&&x.serie===t.serie&&x.datum>=t.datum&&!x.rechnungId));save();render();toast('Gelöscht')};
     const serie=t.serie&&S.termine.some(x=>x.serie===t.serie&&x.id!==t.id&&x.datum>t.datum);
-    ask('Termin löschen?',[{label:'Nur diesen Termin',cls:'danger',fn:()=>del(false)},...(serie?[{label:'Diesen und alle folgenden',cls:'danger',fn:()=>del(true)}]:[]),{label:'Abbrechen',cls:'ghost'}])},
+    ask('Termin löschen?',[{label:'Nur diesen Termin',cls:'danger',fn:()=>del(false)},...(serie?[{label:'Diesen und alle folgenden',cls:'danger',fn:()=>del(true)}]:[]),{label:'Abbrechen',cls:'ghost'}],serie?'Tipp: Für einzelne Absagen lieber „Abgesagt“ nutzen, für Urlaub „Ferien / frei“.':'')},
   editKind:d=>kindForm(d.id?kind(d.id):null),
-  delKind:d=>ask('Kind und alle offenen Termine löschen?',[{label:'Löschen',cls:'danger',fn:()=>{S.kinder=S.kinder.filter(k=>k.id!==d.id);S.termine=S.termine.filter(t=>t.kindId!==d.id);save();render();toast('Gelöscht')}},{label:'Abbrechen',cls:'ghost'}]),
-  makeInv:()=>{const neu=createInvoices(selMonth,today());save();render();ask(`${neu.length} Rechnung${neu.length>1?'en':''} für ${monatName(selMonth)} erstellt.`,[{label:'Jetzt drucken',fn:()=>doPrint(neu)},{label:'Später',cls:'ghost'}])},
-  printMonth:()=>doPrint(S.rechnungen.filter(r=>r.monat===selMonth).sort((a,b)=>a.nr.localeCompare(b.nr))),
+  delKind:d=>ask('Kind und alle offenen Termine löschen?',[{label:'Löschen',cls:'danger',fn:()=>{S.kinder=S.kinder.filter(k=>k.id!==d.id);S.termine=S.termine.filter(t=>t.kindId!==d.id);save();render();toast('Gelöscht')}},{label:'Abbrechen',cls:'ghost'}],'Wenn das Training nur beendet ist, besser den Haken „Training läuft noch“ entfernen.'),
+  makeInv:()=>{const neu=createInvoices(selMonth,today());save();render();ask(`${neu.length} Rechnung${neu.length>1?'en':''} für ${monatName(selMonth)} erstellt.`,[{label:'Jetzt drucken',fn:()=>doPrint(neu.map(invHTML).join(''))},{label:'Später',cls:'ghost'}])},
+  printMonth:()=>doPrint(S.rechnungen.filter(r=>r.monat===selMonth).sort((a,b)=>a.nr.localeCompare(b.nr)).map(invHTML).join('')),
   showInv:d=>showInv(S.rechnungen.find(r=>r.id===d.id)),
-  printOne:d=>doPrint([S.rechnungen.find(r=>r.id===d.id)]),
+  printOne:d=>doPrint(invHTML(S.rechnungen.find(r=>r.id===d.id))),
+  remind:d=>{const r=S.rechnungen.find(x=>x.id===d.id);r.erinnert=today();save();render();doPrint(remHTML(r))},
+  remindAll:()=>{const l=S.rechnungen.filter(overdue).sort((a,b)=>a.nr.localeCompare(b.nr));l.forEach(r=>r.erinnert=today());save();render();doPrint(l.map(remHTML).join(''))},
   paid:d=>{const r=S.rechnungen.find(x=>x.id===d.id);r.bezahlt=r.bezahlt?null:{datum:today(),quelle:'manuell'};save();render()},
-  storno:d=>ask('Rechnung stornieren? Die Termine werden wieder frei und können neu abgerechnet werden.',[{label:'Stornieren',cls:'danger',fn:()=>{S.rechnungen=S.rechnungen.filter(r=>r.id!==d.id);S.termine.forEach(t=>{if(t.rechnungId===d.id)t.rechnungId=null});save();render();toast('Storniert')}},{label:'Abbrechen',cls:'ghost'}]),
+  storno:d=>ask('Rechnung stornieren?',[{label:'Stornieren',cls:'danger',fn:()=>{S.rechnungen=S.rechnungen.filter(r=>r.id!==d.id);S.termine.forEach(t=>{if(t.rechnungId===d.id)t.rechnungId=null});save();render();toast('Storniert')}},{label:'Abbrechen',cls:'ghost'}],'Die Termine werden wieder frei und können neu abgerechnet werden. Die Rechnungsnummer wird nicht neu vergeben.'),
   sampleCsv:()=>{match=runMatch(sampleCsv());render()},
   csvText:()=>{const v=$('#csvtext').value;if(v.trim()){match=runMatch(v);render()}},
   csvApply:()=>{let n=0;document.querySelectorAll('[data-i]:checked').forEach(c=>{const m=match.out[+c.dataset.i];m.ids.forEach(id=>{const r=S.rechnungen.find(x=>x.id===id);if(r&&!r.bezahlt){r.bezahlt={datum:today(),quelle:'CSV'};n++}})});save();match=null;render();toast(`${n} Rechnung${n===1?'':'en'} als bezahlt markiert`)},
-  hinweis:d=>{$('#settings [name=hinweis]').value=HINWEISE[d.k]},
-  addL:()=>{readSettings();S.leistungen.push({id:uid(),name:'Neue Leistung',art:'stunde',preis:45});save();render()},
+  hinweis:d=>{$('#settings [name=hinweis]').value=HINWEISE[d.k];readSettings();save();toast('Hinweis übernommen')},
+  addL:()=>{readSettings();S.leistungen.push({id:uid(),name:'Neue Leistung',art:'stunde',preis:45,dauer:60});save();render()},
   delL:d=>{readSettings();S.leistungen=S.leistungen.filter(l=>l.id!==d.id);save();render()},
-  backup:()=>{const data=JSON.stringify(S,null,1),name=`lerntraining-sicherung-${today()}.json`;
-    try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'application/json'}));a.download=name;document.body.append(a);a.click();a.remove();toast('Sicherung wird gespeichert')}catch(e){}
-    if(inFrame){navigator.clipboard?.writeText(data).then(()=>toast('In der Vorschau: Sicherung in die Zwischenablage kopiert')).catch(()=>{})}},
-  clearDemo:()=>ask('Alle Beispieldaten löschen und mit eigenen Daten starten?',[{label:'Ja, löschen',cls:'danger',fn:()=>{S=blank();save();location.hash='#einstellungen';route();toast('Bitte zuerst den Briefkopf ausfüllen')}},{label:'Abbrechen',cls:'ghost'}])
+  backup,
+  clearDemo:()=>ask('Alle Beispieldaten löschen und mit eigenen Daten starten?',[{label:'Ja, löschen',cls:'danger',fn:()=>{S=blank();save();location.hash='#kalender';route();toast('Los geht’s – zuerst den Briefkopf ausfüllen')}},{label:'Abbrechen',cls:'ghost'}])
 };
 function readSettings(){const f=$('#settings');if(!f)return;const v=Object.fromEntries(new FormData(f));const s=S.settings;
-  ['name','titel','str','ort','tel','mail','iban','bic','bank','stnr','hinweis'].forEach(k=>s[k]=v[k]??s[k]);s.ziel=+v.ziel||0;s.nrNext=Math.max(1,+v.nrNext||1);
-  S.leistungen.forEach(l=>{if(v['l_name_'+l.id]!=null){l.name=v['l_name_'+l.id];l.art=v['l_art_'+l.id];l.preis=+v['l_preis_'+l.id]||0}})}
+  ['name','titel','str','ort','tel','mail','iban','bic','bank','stnr','hinweis','start'].forEach(k=>s[k]=v[k]??s[k]);s.ziel=+v.ziel||0;s.nrNext=Math.max(1,+v.nrNext||1);s.ausfall=!!v.ausfall;
+  S.leistungen.forEach(l=>{if(v['l_name_'+l.id]!=null){l.name=v['l_name_'+l.id];l.art=v['l_art_'+l.id];l.preis=+v['l_preis_'+l.id]||0;l.dauer=+v['l_dauer_'+l.id]||60}});
+  if(S.demo&&s.name&&s.name!=='Doris Muster')S.demo=false;
+  $('#apptitle').innerHTML=esc(s.name||'Lerntraining')+' <small>Termine &amp; Rechnungen</small>'}
+function ferienCount(){const f=$('#f'),c=$('#fcount');if(!f||!c||!f.von)return;const n=S.termine.filter(t=>t.datum>=f.von.value&&t.datum<=f.bis.value&&!t.abgesagt&&!t.rechnungId).length;c.textContent=`${n} Termin${n===1?'':'e'} in diesem Zeitraum`}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b)return;const f=A[b.dataset.act];if(f){e.preventDefault();f(b.dataset)}});
-document.addEventListener('submit',e=>{e.preventDefault();if(e.target.id==='settings'){readSettings();S.demo=false;save();render();toast('Einstellungen gespeichert')}else if(e.target.id==='f'&&onSub)onSub(new FormData(e.target))});
-document.addEventListener('change',e=>{const c=e.target.dataset.chg;if(!c)return;
-  if(c==='month'){selMonth=e.target.value;render()}
-  else if(c==='csv'||c==='restore'){const file=e.target.files[0];if(!file)return;const rd=new FileReader();
+document.addEventListener('submit',e=>{e.preventDefault();if(e.target.id==='f'&&onSub)onSub(new FormData(e.target))});
+document.addEventListener('input',e=>{if(e.target.id==='ksuche'){ksuche=e.target.value;$('#klist').innerHTML=klist()}else if(e.target.closest('#f')&&(e.target.name==='von'||e.target.name==='bis'))ferienCount()});
+document.addEventListener('change',e=>{const el=e.target,c=el.dataset.chg;
+  if(el.closest('#settings')){readSettings();save();return}
+  const f=el.closest('#f');
+  if(f&&f.dataset.new&&el.name==='kindId'){const d=newTerminDefaults(f.datum.value,el.value);f.lid.value=d.lid;f.dauer.value=d.dauer;return}
+  if(f&&el.name==='lid'){const l=leist(el.value);if(l)f.dauer.value=l.dauer;return}
+  if(!c)return;
+  if(c==='month'){selMonth=el.value;render()}
+  else if(c==='kalle'){kalle=el.checked;$('#klist').innerHTML=klist()}
+  else if(c==='csv'||c==='restore'){const file=el.files[0];if(!file)return;const rd=new FileReader();
     rd.onload=()=>{let txt=String(rd.result);if(c==='csv'){if(txt.includes(String.fromCharCode(65533))){const r2=new FileReader();r2.onload=()=>{match=runMatch(String(r2.result));render()};r2.readAsText(file,'windows-1252');return}match=runMatch(txt);render()}
-      else{try{const d=JSON.parse(txt);if(!d.settings)throw 0;ask('Sicherung laden? Die aktuellen Daten werden ersetzt.',[{label:'Laden',cls:'danger',fn:()=>{S=d;save();render();toast('Sicherung geladen')}},{label:'Abbrechen',cls:'ghost'}])}catch(err){toast('Das ist keine gültige Sicherungsdatei.')}}};
-    rd.readAsText(file,'utf-8');e.target.value=''}
+      else{try{const d=JSON.parse(txt);if(!d.settings)throw 0;ask('Sicherung laden?',[{label:'Laden',cls:'danger',fn:()=>{S=migrate(d);save();render();toast('Sicherung geladen')}},{label:'Abbrechen',cls:'ghost'}],'Die aktuellen Daten auf diesem Gerät werden dabei ersetzt.')}catch(err){toast('Das ist keine gültige Sicherungsdatei.')}}};
+    rd.readAsText(file,'utf-8');el.value=''}
 });
+let tx=0,ty=0;
+$('#main').addEventListener('touchstart',e=>{tx=e.touches[0].clientX;ty=e.touches[0].clientY},{passive:true});
+$('#main').addEventListener('touchend',e=>{if(tab!=='kalender'||!$('#modal').hidden)return;const dx=e.changedTouches[0].clientX-tx,dy=e.changedTouches[0].clientY-ty;if(Math.abs(dx)>70&&Math.abs(dy)<50)A.nav({d:String((dx<0?1:-1)*(calView==='tag'?1:7))})},{passive:true});
 route();
 }
 </script>
