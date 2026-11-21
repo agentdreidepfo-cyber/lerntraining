@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Rechnungen">
+<title>Lerntraining Rechnungen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* VOICE: ruhig, freundlich, klar – ein Werkzeug für eine Lerntrainerin, kein Büroprogramm
+   IDEA: das Schulheft – linierte Tagesseiten, Füller-Tinte, roter Korrekturstift
+   PICTURE: der Wochenkalender selbst, mit großen hängenden Uhrzeiten
+   COLOUR and TYPE: Weiß, Tintenblau #1e3cb8, Korrekturrot #cc2f2a; Atkinson Hyperlegible (für Leselernende entworfen)
+   LAYOUT: Kopfleiste mit Reitern, darunter eine Arbeitsfläche; große Tippflächen fürs iPad */
+:root{color-scheme:light dark;--bg:light-dark(#fff,#0e1320);--paper:light-dark(#f4f6fb,#161c2b);--line:light-dark(#dde3ef,#283149);--ink:light-dark(#151a2c,#e9edf7);--muted:light-dark(#5a647e,#9ca6c0);--tinte:light-dark(#1e3cb8,#93a9ff);--tinte2:light-dark(#e8edff,#1d2747);--rot:light-dark(#cc2f2a,#ff8078);--rot2:light-dark(#fdecea,#3a1c1f);--head:light-dark(#1e3cb8,#16224f)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.5 'Atkinson Hyperlegible',system-ui,sans-serif;overflow-x:clip}
+.top{background:var(--head);color:#fff;padding:14px max(3vw,14px) 0}
+.top .in{max-width:1240px;margin:0 auto}
+.top h1{margin:0 0 10px;font-size:22px;line-height:1.1}
+.top h1 small{display:block;font-weight:400;opacity:.8;font-size:14px}
+nav{display:flex;gap:4px;overflow-x:auto;padding-bottom:10px}
+nav a{flex:none;color:#fff;opacity:.85;padding:10px 16px;border-radius:999px;text-decoration:none;font-weight:700;min-height:44px}
+nav a.on{background:#fff;color:#1e3cb8;opacity:1}
+main{max-width:1240px;margin:0 auto;padding:20px max(3vw,14px) 80px}
+.bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:6px 0 16px}
+.bar h2{margin:0;font-size:30px;line-height:1.1;text-wrap:balance}
+h3{font-size:21px;margin:26px 0 10px}
+.sp{flex:1}
+.btn{font:inherit;font-weight:700;min-height:44px;padding:8px 18px;border-radius:12px;border:0;background:var(--tinte);color:light-dark(#fff,#0e1320);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;text-decoration:none}
+.btn.ghost{background:var(--tinte2);color:var(--tinte)}
+.btn.danger{background:var(--rot2);color:var(--rot)}
+.btn.big{min-height:54px;font-size:18px;padding:12px 24px}
+.btn.sm{min-height:40px;padding:6px 12px;font-size:15px}
+.btn:disabled{opacity:.45;cursor:default}
+:focus-visible{outline:3px solid var(--rot);outline-offset:2px}
+.muted{color:var(--muted)}
+.week{display:grid;grid-template-columns:repeat(auto-fill,minmax(165px,1fr));gap:12px}
+.seg{display:inline-flex;background:var(--tinte2);border-radius:12px;padding:3px}
+.seg button{font:inherit;font-weight:700;border:0;background:none;color:var(--tinte);min-height:38px;padding:4px 16px;border-radius:10px;cursor:pointer}
+.seg button.on{background:var(--bg);color:var(--ink);box-shadow:0 1px 3px rgb(0 0 0/.15)}
+.strip{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin-bottom:16px}
+.chip{font:inherit;color:inherit;background:var(--paper);border:0;border-radius:14px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;cursor:pointer;line-height:1.2;min-height:44px}
+.chip span,.chip small{font-size:13px;color:var(--muted)}.chip b{font-size:21px}
+.chip.today b{color:var(--tinte)}.chip.on{background:var(--tinte);color:light-dark(#fff,#0e1320)}.chip.on b,.chip.on span,.chip.on small{color:inherit}
+.dayhead{display:flex;align-items:center;gap:10px;margin-bottom:10px;flex-wrap:wrap}
+.agenda{list-style:none;margin:0;padding:0;background:var(--paper);border-radius:18px;overflow:hidden}
+.agenda li{display:grid;grid-template-columns:92px minmax(0,1fr) auto;gap:14px;align-items:center;padding:10px 16px;border-bottom:1px solid var(--line)}
+.agenda li:last-child{border-bottom:0}
+.agenda .t{font-size:24px;font-weight:700;color:var(--tinte);font-variant-numeric:tabular-nums;line-height:1.1;white-space:nowrap}
+.agenda .t small{display:block;font-size:13px;color:var(--muted);font-weight:400}
+.agenda .who{font:inherit;color:inherit;background:none;border:0;text-align:left;padding:4px 0;cursor:pointer;display:flex;flex-direction:column;min-height:48px;justify-content:center}
+.agenda .who b{font-size:19px}.agenda .who small{color:var(--muted);font-size:14px}
+.agenda li.off .who b{text-decoration:line-through;color:var(--muted)}.agenda li.off .t{color:var(--rot)}
+.dhead{font:inherit;color:inherit;background:none;border:0;text-align:left;padding:0;cursor:pointer;display:flex;flex-direction:column;line-height:1.2;min-height:44px}
+.dhead span{color:var(--muted);font-size:14px}
+.tm.c{flex-direction:row;align-items:baseline;gap:8px;padding:6px 10px;min-height:40px}
+.tm.c .t{font-size:15px}.tm.c b{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tm.off b{text-decoration:line-through;color:var(--muted)}
+@media(max-width:600px){.strip small{display:none}.agenda li{grid-template-columns:70px minmax(0,1fr)}.agenda li>.btn{grid-column:2;justify-self:start}.agenda .t{font-size:20px}}
+.day{background:var(--paper);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:8px;gap:6px}
+.day.today{box-shadow:inset 0 0 0 2px var(--tinte)}
+.day header{display:flex;flex-direction:column;line-height:1.2;min-height:40px}
+.day header span{color:var(--muted);font-size:14px;white-space:nowrap}
+.tm{display:flex;flex-direction:column;gap:2px;align-items:flex-start;text-align:left;width:100%;font:inherit;color:inherit;background:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px;min-height:44px;cursor:pointer}
+.tm .t{font-weight:700;color:var(--tinte);font-variant-numeric:tabular-nums;white-space:nowrap;font-size:18px;line-height:1.2}
+.tm .who{display:flex;flex-direction:column;font-weight:700;line-height:1.25}
+.tm small{font-weight:400;color:var(--muted);font-size:13px}
+.tm.off .who b{text-decoration:line-through;color:var(--muted)}.tm.off .t{color:var(--rot)}
+.tm.done{border-style:dashed}
+.add{font:inherit;color:var(--tinte);background:var(--bg);border:1.5px dashed var(--line);border-radius:12px;min-height:44px;cursor:pointer;margin-top:auto;font-weight:700}
+.free{color:var(--muted);margin:2px;font-size:14px}
+.sum{margin-top:14px;color:var(--muted);font-size:15px}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:12px}
+.card{text-align:left;font:inherit;color:inherit;background:var(--paper);border:0;border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:6px;cursor:pointer}
+.card b{font-size:19px}
+.tag{align-self:flex-start;background:var(--tinte2);color:var(--tinte);border-radius:999px;padding:2px 10px;font-size:14px;font-weight:700}
+.panel{background:var(--paper);border-radius:18px;padding:20px;margin-bottom:20px}
+.panel h2{margin:0 0 6px;font-size:26px;line-height:1.1}
+.big-n{font-size:clamp(30px,5vw,44px);font-weight:700;color:var(--tinte);line-height:1.05;white-space:nowrap}
+.kpis{display:flex;gap:28px;flex-wrap:wrap;margin:14px 0}
+.kpis div span{display:block;color:var(--muted);font-size:14px}
+table{width:100%;border-collapse:collapse}
+th,td{text-align:left;padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:14px;color:var(--muted);font-weight:700}
+td small{display:block;color:var(--muted);font-size:14px}
+.num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.pill{display:inline-block;border-radius:999px;padding:2px 10px;font-size:14px;font-weight:700;white-space:nowrap}
+.pill.ok{background:var(--tinte2);color:var(--tinte)}.pill.due{background:var(--rot2);color:var(--rot)}.pill.open{background:var(--line);color:var(--ink)}
+.tacts{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.modal{position:fixed;inset:0;background:rgb(10 14 30/.45);display:flex;align-items:flex-start;justify-content:center;padding:4vh 12px;overflow:auto;z-index:20}
+.modal[hidden]{display:none}
+.mbox{background:var(--bg);border-radius:20px;padding:22px;width:min(560px,100%);box-shadow:0 20px 60px rgb(0 0 0/.3)}
+.mbox.wide{width:min(900px,100%)}
+.mbox h3{margin:0 0 16px}
+label{display:flex;flex-direction:column;gap:4px;font-weight:700;font-size:15px;margin-bottom:12px}
+input,select,textarea{font:inherit;font-size:16px;font-weight:400;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:10px 12px;min-height:44px;width:100%}
+textarea{min-height:90px}
+.row{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:0 12px}
+label.chk{flex-direction:row;align-items:center;gap:10px;font-weight:400;font-size:16px}
+label.chk input{width:24px;height:24px;min-height:0;flex:none}
+.acts{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px}
+.note{background:var(--tinte2);border-radius:12px;padding:10px 14px;font-size:15px;margin:8px 0}
+.demo{background:var(--rot2);border-radius:14px;padding:10px 14px;display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:16px;font-size:15px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 18px;border-radius:12px;z-index:30;max-width:92vw;opacity:0;pointer-events:none;transition:opacity .25s}
+.toast.on{opacity:1}
+.sheetwrap{background:var(--paper);border-radius:12px;padding:8px;overflow:auto;max-height:70vh;margin-bottom:12px}
+fieldset{border:0;padding:0;margin:0 0 22px}
+legend{font-size:21px;font-weight:700;margin-bottom:10px}
+.lrow{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1.3fr) minmax(0,1fr) auto;gap:8px;align-items:end;margin-bottom:8px}
+.lrow label{margin:0}
+.steps ol{margin:0 0 14px;padding-left:22px}
+details{margin-top:14px}summary{cursor:pointer;color:var(--tinte);font-weight:700;min-height:44px;display:flex;align-items:center}
+.empty{background:var(--paper);border-radius:16px;padding:24px;text-align:center;color:var(--muted)}
+#print{display:none}
+.inv{width:210mm;min-height:297mm;padding:18mm 20mm 30mm;background:#fff;color:#111;font:10.5pt/1.45 'Atkinson Hyperlegible',Arial,sans-serif;position:relative;margin:0 auto}
+.inv .ih{display:flex;justify-content:space-between;gap:20px;border-bottom:2px solid #1e3cb8;padding-bottom:5mm}
+.inv .iname{font-size:18pt;font-weight:700;color:#1e3cb8;line-height:1.1}
+.inv .ir{text-align:right;font-size:9.5pt;color:#444}
+.inv .snd{font-size:7.5pt;color:#666;margin-top:12mm;text-decoration:underline}
+.inv .ia{margin-top:2mm;min-height:26mm;font-size:11pt}
+.inv .im{width:auto;margin-left:auto;font-size:9.5pt}
+.inv .im td{border:0;padding:1px 0 1px 10mm;color:#111}
+.inv h1{font-size:17pt;margin:8mm 0 3mm}
+.inv th,.inv td{border-color:#ddd;color:#111;padding:5px 6px}
+.inv .ip th{color:#555;font-size:9pt;border-bottom:1.5px solid #111}
+.inv .ip tfoot td{border:0;border-top:1.5px solid #111;font-weight:700;font-size:11.5pt}
+.inv .if{position:absolute;left:20mm;right:20mm;bottom:12mm;border-top:1px solid #ccc;padding-top:3mm;font-size:8pt;color:#555;text-align:center}
+@media(max-width:600px){table{font-size:14px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px;border-bottom:1px solid var(--line)}.stack td{display:flow-root;border:0;padding:3px 0;padding-inline-start:8em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:7.5em;margin-inline-start:-8em;white-space:normal;color:var(--muted)}.stack td:empty{display:none}.tacts{justify-content:flex-start}.lrow{grid-template-columns:1fr 1fr}}
+@media print{@page{size:A4;margin:0}body{background:#fff}body>*:not(#print){display:none!important}#print{display:block!important}.inv{break-after:page;height:297mm;overflow:hidden}}
+@media(prefers-reduced-motion:reduce){.toast{transition:none}}
+</style>
+<script>new MutationObserver(()=>{for(const c of document.querySelectorAll('.stack td:not([data-l])')){let i=0,p=c;while(p=p.previousElementSibling)i+=p.colSpan;c.dataset.l=c.closest('table').rows[0].cells[i]?.textContent||''}}).observe(document,{childList:true,subtree:true})</script>
+</head>
+<body>
+<header class="top"><div class="in">
+  <h1 id="apptitle">Lerntraining <small>Termine &amp; Rechnungen</small></h1>
+  <nav aria-label="Bereiche">
+    <a href="#kalender">Kalender</a><a href="#kinder">Kinder</a><a href="#rechnungen">Rechnungen</a><a href="#zahlungen">Zahlungen</a><a href="#einstellungen">Einstellungen</a>
+  </nav>
+</div></header>
+<main id="main"></main>
+<div id="modal" class="modal" hidden><div class="mbox" id="mbox" role="dialog" aria-modal="true"></div></div>
+<div id="toast" class="toast" role="status"></div>
+<div id="print"></div>
+<script>
+{
+const KEY='lerntraining-rechnungen-v2';
+const $=s=>document.querySelector(s);
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const r2=n=>Math.round(n*100)/100;
+const eur=n=>r2(+n||0).toLocaleString('de-DE',{style:'currency',currency:'EUR'});
+const z=n=>String(n).padStart(2,'0');
+const iso=d=>d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate());
+const de=s=>s?s.split('-').reverse().join('.'):'';
+const pISO=s=>{const[a,b,c]=s.split('-').map(Number);return new Date(a,b-1,c)};
+const addDays=(d,n)=>{const x=new Date(d);x.setDate(x.getDate()+n);return x};
+const monday=d=>{const x=new Date(d.getFullYear(),d.getMonth(),d.getDate());return addDays(x,-((x.getDay()+6)%7))};
+const MON=['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'];
+const TAGE=['Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'];
+const monatName=m=>{const[y,mm]=m.split('-');return MON[+mm-1]+' '+y};
+const isoWeek=d=>{const t=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));const n=t.getUTCDay()||7;t.setUTCDate(t.getUTCDate()+4-n);const y=new Date(Date.UTC(t.getUTCFullYear(),0,1));return Math.ceil(((t-y)/864e5+1)/7)};
+const today=()=>iso(new Date());
+let inFrame=false;try{inFrame=window.self!==window.top}catch(e){inFrame=true}
+const BEREICHE=['Legasthenie','Dyskalkulie','Legasthenie & Dyskalkulie'];
+const HINWEISE={k19:'Gemäß § 19 UStG wird keine Umsatzsteuer berechnet.',n21:'Die Leistung ist gemäß § 4 Nr. 21 UStG von der Umsatzsteuer befreit.'};
+
+function blank(){const y=new Date().getFullYear();return{demo:false,settings:{name:'',titel:'Lerntraining bei Legasthenie & Dyskalkulie',str:'',ort:'',tel:'',mail:'',iban:'',bic:'',bank:'',stnr:'',hinweis:HINWEISE.k19,ziel:14,nrJahr:y,nrNext:1},leistungen:[{id:'test',name:'Eingangstest',art:'pauschal',preis:80},{id:'std',name:'Trainingsstunde',art:'stunde',preis:45}],kinder:[],termine:[],rechnungen:[]}}
+function demo(){
+  const s=blank();s.demo=true;
+  Object.assign(s.settings,{name:'Doris Muster',str:'Musterweg 1',ort:'91738 Pfofeld',tel:'09834 000000',mail:'lerntraining@example.de',iban:'DE12 3456 7890 1234 5678 90',bic:'GENODEF1XXX',bank:'Musterbank eG'});
+  const VN=['Lena','Jonas','Mia','Paul','Emma','Ben','Hannah','Luis','Sophie','Felix','Marie','Noah','Lea','Elias','Anna','Leon','Clara','Max','Lina','Jakob','Ella','Tim','Nele','Finn','Laura','Moritz','Johanna','Lukas','Ida','David','Greta','Simon'];
+  const NN=['Müller','Weber','Schneider','Fischer','Meyer','Wagner','Becker','Schulz','Hoffmann','Koch','Bauer','Richter','Klein','Wolf','Schröder','Neumann','Schwarz','Zimmermann','Braun','Krüger','Hofmann','Hartmann','Lange','Schmitt','Werner','Krause','Meier','Lehmann','Schmid','Schulze','Maier','Köhler'];
+  const ORT=['91710 Gunzenhausen','91738 Pfofeld','91781 Weißenburg','91720 Absberg','91741 Theilenhofen'],STR=['Hauptstraße','Am Anger','Bahnhofstraße','Kirchweg','Gartenstraße','Ringstraße'];
+  const SLOT=['13:30','14:15','15:00','15:45','16:30','17:15','18:00','18:45'],PRO=[6,8,5,7,6];
+  s.leistungen[1].preis=40;
+  const now=new Date(),start=new Date(now.getFullYear(),now.getMonth()-1,1),end=addDays(now,21);let ki=0;
+  PRO.forEach((cnt,wi)=>{for(let j=0;j<cnt;j++,ki++){
+    const nn=NN[ki%NN.length],k={id:uid(),name:VN[ki%VN.length]+' '+nn,bereich:BEREICHE[ki%3],empf:'Familie '+nn,str:STR[ki%6]+' '+(ki%17+1),ort:ORT[ki%5],mail:'',satz:ki===5?36:'',notiz:''};s.kinder.push(k);
+    const wd=wi+1,test=ki%11===4;let d=addDays(start,(wd-start.getDay()+7)%7),first=true,serie=uid(),n=0;
+    while(d<=end){s.termine.push({id:uid(),kindId:k.id,datum:iso(d),zeit:SLOT[j],dauer:first&&test?90:45,lid:first&&test?'test':'std',abgesagt:(ki*7+n)%19===0,serie,rechnungId:null});first=false;n++;d=addDays(d,7)}
+  }});
+  S=s;const pm=iso(start).slice(0,7);const neu=createInvoices(pm,iso(new Date(now.getFullYear(),now.getMonth(),1)));
+  neu.forEach((r,i)=>{if(i%4)r.bezahlt={datum:iso(new Date(now.getFullYear(),now.getMonth(),Math.min(5,now.getDate()))),quelle:'manuell'}});
+  return s;
+}
+let S;
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}};
+
+const kind=id=>S.kinder.find(k=>k.id===id);
+const leist=id=>S.leistungen.find(l=>l.id===id);
+function satzVon(t){const l=leist(t.lid),k=kind(t.kindId);return k&&k.satz!==''&&k.satz!=null?+k.satz:+(l?.preis||0)}
+function preisVon(t){const l=leist(t.lid);if(!l)return 0;return l.art==='pauschal'?+l.preis:r2(satzVon(t)*t.dauer/60)}
+function nextNr(datum){const y=+datum.slice(0,4);if(S.settings.nrJahr!==y){S.settings.nrJahr=y;S.settings.nrNext=1}return y+'-'+String(S.settings.nrNext++).padStart(3,'0')}
+const pending=m=>S.termine.filter(t=>t.datum.startsWith(m)&&t.datum<=today()&&!t.abgesagt&&!t.rechnungId&&kind(t.kindId));
+function createInvoices(m,datum){
+  const by={};pending(m).forEach(t=>(by[t.kindId]=by[t.kindId]||[]).push(t));
+  const ids=Object.keys(by).sort((a,b)=>kind(a).name.localeCompare(kind(b).name));
+  return ids.map(kid=>{
+    const k=kind(kid),ts=by[kid].sort((a,b)=>(a.datum+a.zeit).localeCompare(b.datum+b.zeit));
+    const pos=ts.map(t=>{const l=leist(t.lid);return{datum:t.datum,text:l.name+(l.art==='stunde'?` (${t.dauer} Min. à ${eur(satzVon(t))}/Std.)`:''),dauer:t.dauer,betrag:preisVon(t)}});
+    const r={id:uid(),nr:nextNr(datum),kindId:kid,kname:k.name,bereich:k.bereich,empf:k.empf,str:k.str,ort:k.ort,datum,faellig:iso(addDays(pISO(datum),+S.settings.ziel||14)),monat:m,pos,summe:r2(pos.reduce((a,p)=>a+p.betrag,0)),bezahlt:null};
+    ts.forEach(t=>t.rechnungId=r.id);S.rechnungen.push(r);return r;
+  });
+}
+function status(r){if(r.bezahlt)return`<span class="pill ok">bezahlt ${de(r.bezahlt.datum)}</span>`;if(today()>r.faellig)return'<span class="pill due">überfällig</span>';return'<span class="pill open">offen</span>'}
+
+try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){S=null}
+if(!S||!S.settings)S=demo();
+save();
+
+let tab='kalender',calView='tag',curDay=new Date(),selMonth=(()=>{const d=new Date();if(d.getDate()<=10)d.setMonth(d.getMonth()-1,1);return iso(d).slice(0,7)})(),match=null;
+const V={};
+
+const ende=t=>{const[hh,mm]=t.zeit.split(':').map(Number);const m=hh*60+mm+(+t.dauer||0);return z(Math.floor(m/60)%24)+':'+z(m%60)};
+const kurz=n=>{const p=String(n).trim().split(/\s+/);return p.length>1?p[0]+' '+p[p.length-1][0]+'.':n};
+V.kalender=()=>{
+  if(!S.kinder.length)return`<div class="bar"><h2>Kalender</h2></div><div class="empty">Noch keine Kinder angelegt.<br><br><a class="btn" href="#kinder">Erstes Kind anlegen</a></div>`;
+  const td=today(),wk=monday(curDay),days=TAGE.map((_,i)=>addDays(wk,i)),cd=iso(curDay);
+  const on=(t)=>S.termine.filter(x=>x.datum===t).sort((a,b)=>a.zeit.localeCompare(b.zeit));
+  const seg=`<div class="seg" role="group" aria-label="Ansicht"><button class="${calView==='tag'?'on':''}" data-act="view" data-v="tag">Tag</button><button class="${calView==='woche'?'on':''}" data-act="view" data-v="woche">Woche</button></div>`;
+  const nav=st=>`<button class="btn ghost" data-act="nav" data-d="-${st}" aria-label="Zurück">‹</button><button class="btn ghost" data-act="nav" data-d="0">Heute</button><button class="btn ghost" data-act="nav" data-d="${st}" aria-label="Weiter">›</button>`;
+  if(calView==='tag'){
+    const ts=on(cd),act=ts.filter(t=>!t.abgesagt),dow=(curDay.getDay()+6)%7;
+    const strip=`<div class="strip">${days.map((d,i)=>{const di=iso(d),n=on(di).filter(t=>!t.abgesagt).length;return`<button class="chip${di===cd?' on':''}${di===td?' today':''}" data-act="day" data-date="${di}"><span>${TAGE[i].slice(0,2)}</span><b>${d.getDate()}.</b><small>${n?n+' Kinder':'frei'}</small></button>`}).join('')}</div>`;
+    return`<div class="bar"><h2>${dow<6?TAGE[dow]:'Sonntag'}, ${curDay.getDate()}. ${MON[curDay.getMonth()]}</h2><span class="sp"></span>${seg}${nav(1)}</div>${strip}
+    <div class="dayhead"><span><b>${act.length} Kinder</b> <span class="muted">· ${eur(act.reduce((a,t)=>a+preisVon(t),0))}${ts.length>act.length?` · ${ts.length-act.length} abgesagt`:''}</span></span><span class="sp"></span><button class="btn" data-act="newTermin" data-date="${cd}">+ Termin</button></div>
+    ${ts.length?`<ol class="agenda">${ts.map(t=>{const k=kind(t.kindId),l=leist(t.lid);return`<li class="${t.abgesagt?'off':''}"><span class="t">${t.zeit}<small>bis ${ende(t)}</small></span><button class="who" data-act="editTermin" data-id="${t.id}"><b>${esc(k?.name||'(gelöscht)')}</b><small>${esc(k?.bereich||'')} · ${esc(l?.name||'')} · ${t.dauer} Min.${t.rechnungId?' · abgerechnet':''}</small></button>${t.rechnungId?'<span></span>':`<button class="btn sm ${t.abgesagt?'':'ghost'}" data-act="abg" data-id="${t.id}">${t.abgesagt?'Kommt doch':'Abgesagt'}</button>`}</li>`}).join('')}</ol>`:'<div class="empty">Keine Termine an diesem Tag.</div>'}`;
+  }
+  const wt=S.termine.filter(t=>t.datum>=iso(days[0])&&t.datum<=iso(days[5])&&!t.abgesagt);
+  return`<div class="bar"><h2>Woche ${isoWeek(wk)}</h2><span class="muted">${de(iso(days[0]))} – ${de(iso(days[5]))}</span><span class="sp"></span>${seg}${nav(7)}</div>
+  <div class="week">${days.map((d,i)=>{const di=iso(d),ts=on(di),n=ts.filter(t=>!t.abgesagt).length;
+    return`<section class="day${di===td?' today':''}"><button class="dhead" data-act="day" data-date="${di}"><b>${TAGE[i]}</b><span>${d.getDate()}. ${MON[d.getMonth()].slice(0,3)} · ${n} Kinder</span></button>${ts.map(t=>{const k=kind(t.kindId);
+      return`<button class="tm c${t.abgesagt?' off':''}" data-act="editTermin" data-id="${t.id}"><span class="t">${t.zeit}</span><b>${esc(kurz(k?.name||'?'))}</b></button>`}).join('')||'<p class="free">frei</p>'}<button class="add" data-act="newTermin" data-date="${di}">+ Termin</button></section>`}).join('')}</div>
+  <p class="sum">Diese Woche: ${wt.length} Termine · ${eur(wt.reduce((a,t)=>a+preisVon(t),0))}</p>`;
+};
+
+V.kinder=()=>`<div class="bar"><h2>Kinder</h2><span class="muted">${S.kinder.length} angelegt</span><span class="sp"></span><button class="btn" data-act="editKind">+ Kind anlegen</button></div>`+
+  (S.kinder.length?`<div class="cards">${[...S.kinder].sort((a,b)=>a.name.localeCompare(b.name)).map(k=>{const n=S.termine.filter(t=>t.kindId===k.id&&!t.abgesagt).length;
+  return`<button class="card" data-act="editKind" data-id="${k.id}"><b>${esc(k.name)}</b><span class="tag">${esc(k.bereich)}</span><span>${esc(k.empf)}<br>${esc(k.str)}<br>${esc(k.ort)}</span><span class="muted">${k.satz!==''&&k.satz!=null?eur(k.satz)+' / Std. (eigener Satz)':'Standard-Stundensatz'} · ${n} Termine</span></button>`}).join('')}</div>`:'<div class="empty">Tippe auf „+ Kind anlegen“, um das erste Kind mit Rechnungsadresse zu hinterlegen.</div>');
+
+V.rechnungen=()=>{
+  const p=pending(selMonth),kids=new Set(p.map(t=>t.kindId)),sum=p.reduce((a,t)=>a+preisVon(t),0);
+  const later=S.termine.filter(t=>t.datum.startsWith(selMonth)&&t.datum>today()&&!t.abgesagt&&!t.rechnungId).length;
+  const ms=[];const d=new Date();d.setDate(1);d.setMonth(d.getMonth()-11);for(let i=0;i<12;i++){ms.push(iso(d).slice(0,7));d.setMonth(d.getMonth()+1)}
+  const inv=S.rechnungen.filter(r=>r.monat===selMonth).sort((a,b)=>a.nr.localeCompare(b.nr));
+  let h=`<section class="panel"><h2>Monatsabschluss</h2><label style="max-width:280px">Monat<select data-chg="month">${ms.reverse().map(m=>`<option value="${m}"${m===selMonth?' selected':''}>${monatName(m)}</option>`).join('')}</select></label>
+  <div class="kpis"><div><span>Noch abzurechnen</span><b class="big-n">${eur(sum)}</b></div><div><span>Kinder</span><b class="big-n">${kids.size}</b></div><div><span>Termine</span><b class="big-n">${p.length}</b></div></div>
+  ${later?`<p class="note">${later} Termin${later>1?'e':''} in diesem Monat ${later>1?'liegen':'liegt'} noch in der Zukunft und ${later>1?'werden':'wird'} erst danach berechnet.</p>`:''}
+  <div class="acts"><button class="btn big" data-act="makeInv" ${p.length?'':'disabled'}>Alle Rechnungen erstellen</button>${inv.length?`<button class="btn big ghost" data-act="printMonth">Alle ${inv.length} drucken</button>`:''}</div>
+  ${inFrame?'<p class="muted" style="font-size:14px;margin:10px 0 0">In dieser Vorschau ist Drucken gesperrt. In der fertigen App auf dem iPad öffnet sich der Druckdialog (auch „Als PDF sichern“).</p>':''}</section>`;
+  const tbl=list=>`<table class="stack"><thead><tr><th>Nr.</th><th>Kind</th><th>Datum</th><th class="num">Betrag</th><th>Status</th><th></th></tr></thead><tbody>${list.map(r=>`<tr><td>${r.nr}</td><td>${esc(r.kname)}<small>${esc(r.empf)}</small></td><td>${de(r.datum)}</td><td class="num">${eur(r.summe)}</td><td>${status(r)}</td><td><div class="tacts"><button class="btn sm ghost" data-act="showInv" data-id="${r.id}">Ansehen</button><button class="btn sm ${r.bezahlt?'ghost':''}" data-act="paid" data-id="${r.id}">${r.bezahlt?'Wieder offen':'Bezahlt'}</button></div></td></tr>`).join('')}</tbody></table>`;
+  h+=`<h3>Rechnungen ${monatName(selMonth)}</h3>`+(inv.length?tbl(inv):'<p class="muted">Für diesen Monat gibt es noch keine Rechnungen.</p>');
+  const other=S.rechnungen.filter(r=>r.monat!==selMonth&&!r.bezahlt).sort((a,b)=>a.nr.localeCompare(b.nr));
+  if(other.length)h+=`<h3>Offen aus anderen Monaten</h3>`+tbl(other);
+  return h;
+};
+
+V.zahlungen=()=>{
+  const open=S.rechnungen.filter(r=>!r.bezahlt).sort((a,b)=>a.nr.localeCompare(b.nr));
+  let h=`<div class="bar"><h2>Zahlungseingänge prüfen</h2></div><section class="panel steps"><ol><li>Im Online-Banking die Umsätze als <b>CSV-Datei</b> exportieren.</li><li>Die Datei hier auswählen.</li><li>Treffer kurz prüfen und übernehmen.</li></ol>
+  <div class="acts"><label class="btn big" style="margin:0">CSV-Datei auswählen<input type="file" accept=".csv,text/csv,text/plain" data-chg="csv" hidden></label>${open.length?'<button class="btn big ghost" data-act="sampleCsv">Mit Beispiel-Kontoauszug testen</button>':''}</div>
+  <details><summary>Oder Inhalt einfügen</summary><textarea id="csvtext" placeholder="Inhalt der CSV-Datei hier einfügen"></textarea><div class="acts"><button class="btn ghost" data-act="csvText">Prüfen</button></div></details></section>`;
+  if(match){
+    if(match.err)h+=`<p class="note">${esc(match.err)}</p>`;
+    else{const lab={sicher:'Rechnungsnr. & Betrag passen',abweichung:'Rechnungsnr. passt, Betrag weicht ab',vorschlag:'Vorschlag: Betrag & Name passen'};
+      h+=`<h3>Gefundene Zahlungen</h3>${match.out.length?`<table class="stack"><thead><tr><th>Übernehmen</th><th>Eingang</th><th class="num">Betrag</th><th>Rechnung</th><th>Hinweis</th></tr></thead><tbody>${match.out.map((m,i)=>{const rs=m.ids.map(id=>S.rechnungen.find(r=>r.id===id));
+      return`<tr><td><label class="chk" style="margin:0"><input type="checkbox" data-i="${i}" ${m.typ==='sicher'?'checked':''} aria-label="Zahlung übernehmen"></label></td><td>${esc(m.name||'–')}<small>${esc(m.datum)} · ${esc(m.zweck)}</small></td><td class="num">${eur(m.betrag)}</td><td>${rs.map(r=>`${r.nr} · ${esc(r.kname)} (${eur(r.summe)})`).join('<br>')}</td><td><span class="pill ${m.typ==='sicher'?'ok':m.typ==='abweichung'?'due':'open'}">${lab[m.typ]}</span></td></tr>`}).join('')}</tbody></table>
+      <div class="acts"><button class="btn big" data-act="csvApply">Markierte als bezahlt übernehmen</button></div>`:'<p class="muted">Keine Zahlung passte zu einer offenen Rechnung.</p>'}<p class="muted" style="font-size:14px">Andere Eingänge ohne passende Rechnung (ignoriert): ${match.rest}</p>`}
+  }
+  h+=`<h3>Offene Rechnungen · ${eur(open.reduce((a,r)=>a+r.summe,0))}</h3>`+(open.length?`<table class="stack"><thead><tr><th>Nr.</th><th>Kind</th><th>Fällig</th><th class="num">Betrag</th><th>Status</th></tr></thead><tbody>${open.map(r=>`<tr><td>${r.nr}</td><td>${esc(r.kname)}<small>${esc(r.empf)}</small></td><td>${de(r.faellig)}</td><td class="num">${eur(r.summe)}</td><td>${status(r)}</td></tr>`).join('')}</tbody></table>`:'<p class="muted">Alles bezahlt.</p>');
+  return h;
+};
+
+V.einstellungen=()=>{const s=S.settings,f=(n,l,t='text',x='')=>`<label>${l}<input type="${t}" name="${n}" value="${esc(s[n])}" ${x}></label>`;
+  return`<div class="bar"><h2>Einstellungen</h2></div><form id="settings" class="panel">
+  <fieldset><legend>Briefkopf</legend><div class="row">${f('name','Name')}${f('titel','Zusatz unter dem Namen')}</div><div class="row">${f('str','Straße & Nr.')}${f('ort','PLZ & Ort')}</div><div class="row">${f('tel','Telefon','tel')}${f('mail','E-Mail','email')}</div></fieldset>
+  <fieldset><legend>Bankverbindung</legend><div class="row">${f('iban','IBAN')}${f('bic','BIC')}${f('bank','Bank')}</div></fieldset>
+  <fieldset><legend>Steuer &amp; Rechnung</legend>${f('stnr','Steuernummer')}<label>Hinweis auf der Rechnung<textarea name="hinweis">${esc(s.hinweis)}</textarea></label>
+  <div class="acts" style="margin:-4px 0 14px"><button type="button" class="btn sm ghost" data-act="hinweis" data-k="k19">Kleinunternehmerin (§ 19)</button><button type="button" class="btn sm ghost" data-act="hinweis" data-k="n21">Steuerfrei (§ 4 Nr. 21)</button></div>
+  <div class="row">${f('ziel','Zahlungsziel (Tage)','number','min="0" inputmode="numeric"')}${f('nrNext','Nächste Rechnungsnummer','number','min="1" inputmode="numeric"')}</div></fieldset>
+  <fieldset><legend>Leistungen &amp; Preise</legend>${S.leistungen.map(l=>`<div class="lrow"><label>Bezeichnung<input name="l_name_${l.id}" value="${esc(l.name)}" required></label><label>Abrechnung<select name="l_art_${l.id}"><option value="stunde"${l.art==='stunde'?' selected':''}>pro Stunde</option><option value="pauschal"${l.art==='pauschal'?' selected':''}>pauschal</option></select></label><label>Preis €<input name="l_preis_${l.id}" type="number" step="0.5" min="0" inputmode="decimal" value="${l.preis}"></label>${S.termine.some(t=>t.lid===l.id)?'<span></span>':`<button type="button" class="btn danger sm" data-act="delL" data-id="${l.id}" aria-label="Leistung entfernen">✕</button>`}</div>`).join('')}
+  <button type="button" class="btn ghost sm" data-act="addL">+ Leistung</button><p class="muted" style="font-size:14px">Ein eigener Stundensatz pro Kind lässt sich beim Kind eintragen.</p></fieldset>
+  <div class="acts"><button class="btn big">Speichern</button></div></form>
+  <section class="panel"><h2>Datensicherung</h2><p class="muted">Alle Daten liegen nur auf diesem Gerät. Einmal im Monat eine Sicherung speichern (z. B. in iCloud Drive).</p>
+  <div class="acts"><button class="btn ghost" data-act="backup">Sicherung speichern</button><label class="btn ghost" style="margin:0">Sicherung laden<input type="file" accept=".json,application/json" data-chg="restore" hidden></label>${S.demo?'<button class="btn danger" data-act="clearDemo">Beispieldaten löschen</button>':''}</div></section>`;
+};
+
+function render(){
+  document.querySelectorAll('nav a').forEach(a=>a.classList.toggle('on',a.getAttribute('href')==='#'+tab));
+  $('#apptitle').innerHTML=esc(S.settings.name||'Lerntraining')+' <small>Termine &amp; Rechnungen</small>';
+  $('#main').innerHTML=(S.demo?'<div class="demo"><span>Das sind <b>Beispieldaten</b> zum Ausprobieren.</span><span class="sp"></span><button class="btn sm danger" data-act="clearDemo">Löschen &amp; eigene Daten eingeben</button></div>':'')+V[tab]();
+}
+function route(){const t=location.hash.slice(1);tab=V[t]?t:'kalender';match=tab==='zahlungen'?match:null;render()}
+addEventListener('hashchange',route);
+
+let onSub=null;
+function modal(html,sub,wide){$('#mbox').className='mbox'+(wide?' wide':'');$('#mbox').innerHTML=html;onSub=sub||null;$('#modal').hidden=false;const f=$('#mbox input,#mbox select');if(f&&!wide)f.focus()}
+function close(){$('#modal').hidden=true;$('#mbox').innerHTML='';onSub=null}
+function ask(msg,btns){modal(`<h3>${msg}</h3><div class="acts">${btns.map((b,i)=>`<button class="btn ${b.cls||''}" data-act="askBtn" data-i="${i}">${b.label}</button>`).join('')}</div>`);askBtns=btns}
+let askBtns=[];
+let tt;function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(tt);tt=setTimeout(()=>t.classList.remove('on'),3200)}
+$('#modal').addEventListener('click',e=>{if(e.target.id==='modal')close()});
+addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('#modal').hidden)close()});
+
+function terminForm(t,isNew){
+  if(!S.kinder.length){toast('Bitte zuerst ein Kind anlegen.');location.hash='#kinder';return}
+  const sel=(n,o,v)=>`<select name="${n}">${o.map(([a,b])=>`<option value="${a}"${a===v?' selected':''}>${esc(b)}</option>`).join('')}</select>`;
+  modal(`<h3>${isNew?'Neuer Termin':'Termin bearbeiten'}</h3><form id="f">
+  <label>Kind${sel('kindId',[...S.kinder].sort((a,b)=>a.name.localeCompare(b.name)).map(k=>[k.id,k.name]),t.kindId)}</label>
+  <div class="row"><label>Datum<input type="date" name="datum" value="${t.datum}" required></label><label>Uhrzeit<input type="time" name="zeit" value="${t.zeit}" required></label></div>
+  <div class="row"><label>Leistung${sel('lid',S.leistungen.map(l=>[l.id,l.name]),t.lid)}</label><label>Dauer (Min.)<input type="number" name="dauer" min="5" step="5" inputmode="numeric" value="${t.dauer}" required></label></div>
+  ${isNew?`<label class="chk"><input type="checkbox" name="rep" checked> Jede Woche wiederholen</label><label>bis einschließlich<input type="date" name="bis" value="${iso(addDays(pISO(t.datum),7*12))}"></label>`:`<label class="chk"><input type="checkbox" name="abgesagt"${t.abgesagt?' checked':''}> Abgesagt (wird nicht berechnet)</label>`}
+  ${t.rechnungId?'<p class="note">Dieser Termin ist schon abgerechnet. Änderungen ändern die Rechnung nicht mehr.</p>':''}
+  <div class="acts">${!isNew&&!t.rechnungId?`<button type="button" class="btn danger" data-act="delTermin" data-id="${t.id}">Löschen</button>`:''}<span class="sp"></span><button type="button" class="btn ghost" data-act="close">Abbrechen</button><button class="btn">Speichern</button></div></form>`,fd=>{
+    const v=Object.fromEntries(fd);const base={kindId:v.kindId,zeit:v.zeit,dauer:+v.dauer||60,lid:v.lid};
+    if(isNew){const serie=uid();let d=pISO(v.datum);const bis=v.rep&&v.bis?pISO(v.bis):d;let n=0;
+      while(d<=bis&&n<80){S.termine.push({id:uid(),...base,datum:iso(d),abgesagt:false,serie,rechnungId:null});d=addDays(d,7);n++}
+      toast(n>1?`${n} Termine angelegt`:'Termin angelegt');
+    }else{Object.assign(t,base,{datum:v.datum,abgesagt:!!v.abgesagt});toast('Gespeichert')}
+    save();close();render();
+  });
+}
+function kindForm(k){
+  const isNew=!k;k=k||{name:'',bereich:BEREICHE[0],empf:'',str:'',ort:'',mail:'',satz:'',notiz:''};
+  const hasInv=!isNew&&S.rechnungen.some(r=>r.kindId===k.id);
+  modal(`<h3>${isNew?'Kind anlegen':esc(k.name)}</h3><form id="f">
+  <div class="row"><label>Name des Kindes<input name="name" value="${esc(k.name)}" required></label><label>Bereich<select name="bereich">${BEREICHE.map(b=>`<option${b===k.bereich?' selected':''}>${b}</option>`).join('')}</select></label></div>
+  <label>Rechnung an (z. B. Eltern)<input name="empf" value="${esc(k.empf)}" placeholder="Familie Müller" required></label>
+  <div class="row"><label>Straße &amp; Nr.<input name="str" value="${esc(k.str)}" required></label><label>PLZ &amp; Ort<input name="ort" value="${esc(k.ort)}" required></label></div>
+  <div class="row"><label>E-Mail (optional)<input type="email" name="mail" value="${esc(k.mail)}"></label><label>Eigener Stundensatz € (leer = Standard)<input type="number" step="0.5" min="0" inputmode="decimal" name="satz" value="${esc(k.satz)}"></label></div>
+  <label>Notiz<textarea name="notiz">${esc(k.notiz)}</textarea></label>
+  <div class="acts">${!isNew&&!hasInv?`<button type="button" class="btn danger" data-act="delKind" data-id="${k.id}">Löschen</button>`:''}<span class="sp"></span><button type="button" class="btn ghost" data-act="close">Abbrechen</button><button class="btn">Speichern</button></div></form>`,fd=>{
+    const v=Object.fromEntries(fd);if(isNew)S.kinder.push({id:uid(),...v});else Object.assign(k,v);save();close();render();toast('Gespeichert');
+  });
+}
+function invHTML(r){const s=S.settings;
+  return`<article class="inv"><div class="ih"><div><div class="iname">${esc(s.name)}</div><div>${esc(s.titel)}</div></div><div class="ir">${esc(s.str)}<br>${esc(s.ort)}${s.tel?'<br>Tel. '+esc(s.tel):''}${s.mail?'<br>'+esc(s.mail):''}</div></div>
+  <div class="snd">${esc(s.name)} · ${esc(s.str)} · ${esc(s.ort)}</div><div class="ia">${esc(r.empf)}<br>${esc(r.str)}<br>${esc(r.ort)}</div>
+  <table class="im"><tr><td>Rechnungsnummer</td><td><b>${r.nr}</b></td></tr><tr><td>Rechnungsdatum</td><td>${de(r.datum)}</td></tr><tr><td>Leistungszeitraum</td><td>${monatName(r.monat)}</td></tr></table>
+  <h1>Rechnung</h1><p>für das Lerntraining von <b>${esc(r.kname)}</b> (${esc(r.bereich)}) im ${monatName(r.monat)}:</p>
+  <table class="ip"><thead><tr><th>Datum</th><th>Leistung</th><th class="num">Betrag</th></tr></thead><tbody>${r.pos.map(p=>`<tr><td>${de(p.datum)}</td><td>${esc(p.text)}</td><td class="num">${eur(p.betrag)}</td></tr>`).join('')}</tbody><tfoot><tr><td colspan="2">Gesamtbetrag</td><td class="num">${eur(r.summe)}</td></tr></tfoot></table>
+  <p>${esc(s.hinweis)}</p><p>Bitte überweisen Sie den Betrag bis zum <b>${de(r.faellig)}</b> und geben Sie im Verwendungszweck die Rechnungsnummer <b>${r.nr}</b> an.</p><p>Vielen Dank!<br>${esc(s.name)}</p>
+  <div class="if">${[s.name,s.iban&&'IBAN '+s.iban,s.bic&&'BIC '+s.bic,s.bank,s.stnr&&'Steuernr. '+s.stnr].filter(Boolean).map(esc).join(' · ')}</div></article>`}
+function doPrint(list){$('#print').innerHTML=list.map(invHTML).join('');try{window.print()}catch(e){}if(inFrame)toast('In der Vorschau ist Drucken gesperrt – in der fertigen App öffnet sich hier der Druckdialog.')}
+function showInv(r){modal(`<h3>Rechnung ${r.nr} · ${esc(r.kname)}</h3><div class="sheetwrap" id="sw">${invHTML(r)}</div><div class="acts"><button class="btn danger" data-act="storno" data-id="${r.id}">Stornieren</button><span class="sp"></span><button class="btn ghost" data-act="close">Schließen</button><button class="btn" data-act="printOne" data-id="${r.id}">Drucken</button></div>`,null,true);
+  const sw=$('#sw'),inv=sw.querySelector('.inv');inv.style.zoom=Math.min(1,(sw.clientWidth-16)/794)}
+
+function parseCSV(txt){txt=txt.replace(/^﻿/,'');const head=txt.split(/\r?\n/).slice(0,20).join('\n');const cnt=c=>head.split(c).length;const d=[';','\t',','].sort((a,b)=>cnt(b)-cnt(a))[0];
+  const rows=[];let row=[],cell='',q=false;
+  for(let i=0;i<txt.length;i++){const c=txt[i];
+    if(q){if(c==='"'){if(txt[i+1]==='"'){cell+='"';i++}else q=false}else cell+=c}
+    else if(c==='"')q=true;else if(c===d){row.push(cell);cell=''}
+    else if(c==='\n'||c==='\r'){if(c==='\r'&&txt[i+1]==='\n')i++;row.push(cell);rows.push(row);row=[];cell=''}else cell+=c}
+  if(cell||row.length){row.push(cell);rows.push(row)}
+  return rows.filter(r=>r.some(x=>x.trim()))}
+const amt=s=>{s=String(s||'').replace(/[€\s+]|EUR/g,'');if(!s)return NaN;if(s.includes(','))s=s.replace(/\./g,'').replace(',','.');return parseFloat(s)};
+const norm=s=>String(s).toLowerCase().replace(/[\s\-\/.]+/g,'');
+function runMatch(txt){
+  const rows=parseCSV(txt);const hi=rows.findIndex(r=>r.some(c=>/betrag|haben/i.test(c)));
+  if(hi<0)return{err:'In der Datei wurde keine Spalte „Betrag“ gefunden. Bitte die Umsätze als CSV exportieren.'};
+  const H=rows[hi].map(c=>c.toLowerCase().trim()),col=re=>H.findIndex(c=>re.test(c));
+  const bi=col(/betrag/),hb=col(/^haben/),ni=col(/zahlungspflichtig|auftraggeber|zahlungsbeteiligt|beguenstigt|begünstigt|empfänger|^name/),di=col(/buchung|datum|valuta/),vi=col(/verwendung|buchungstext|zweck/);
+  const open=S.rechnungen.filter(r=>!r.bezahlt),used=new Set(),out=[];let rest=0;
+  const words=r=>(r.kname+' '+r.empf).toLowerCase().split(/[^a-zäöüß]+/).filter(w=>w.length>=3&&!['familie','frau','herr','und','von'].includes(w));
+  for(const r of rows.slice(hi+1)){
+    const b=hb>=0&&r[hb]?amt(r[hb]):amt(r[bi]);if(!(b>0))continue;
+    const text=r.join(' '),nt=norm(text),lt=text.toLowerCase();
+    const hits=open.filter(x=>!used.has(x.id)&&nt.includes(norm(x.nr)));let typ=null,ids=[];
+    if(hits.length){ids=hits.map(x=>x.id);typ=Math.abs(hits.reduce((a,x)=>a+x.summe,0)-b)<0.01?'sicher':'abweichung'}
+    else{const c=open.find(x=>!used.has(x.id)&&Math.abs(x.summe-b)<0.01&&words(x).some(w=>lt.includes(w)));if(c){ids=[c.id];typ='vorschlag'}}
+    if(typ){ids.forEach(i=>used.add(i));out.push({datum:di>=0?r[di]:'',name:ni>=0?r[ni]:'',zweck:(vi>=0?r[vi]:'').slice(0,90),betrag:b,ids,typ})}else rest++;
+  }
+  return{out,rest};
+}
+function sampleCsv(){const o=S.rechnungen.filter(r=>!r.bezahlt);const d=de(today());const f=n=>n.toFixed(2).replace('.',',');
+  const L=['Buchungstag;Valutadatum;Name Zahlungsbeteiligter;Verwendungszweck;Betrag (€)',`${d};${d};Stadtwerke;Abschlag Strom;-58,00`];
+  o.forEach((r,i)=>{if(i===0)L.push(`${d};${d};${r.empf};Rechnung ${r.nr};${f(r.summe)}`);else if(i===1)L.push(`${d};${d};${r.empf.replace('Familie ','')};Lerntraining ${r.kname.split(' ')[0]};${f(r.summe)}`);else L.push(`${d};${d};${r.empf};RE ${r.nr.replace('-','')};${f(r.summe)}`)});
+  L.push(`${d};${d};Krankenkasse;Erstattung;23,40`);return L.join('\n')}
+
+const A={
+  close,
+  askBtn:d=>{const b=askBtns[+d.i];close();b&&b.fn&&b.fn()},
+  nav:d=>{curDay=+d.d?addDays(curDay,+d.d):new Date();render()},
+  day:d=>{curDay=pISO(d.date);calView='tag';render()},
+  view:d=>{calView=d.v;render()},
+  abg:d=>{const t=S.termine.find(x=>x.id===d.id);t.abgesagt=!t.abgesagt;save();render()},
+  newTermin:d=>{const last=[...S.termine].reverse()[0];terminForm({kindId:last?.kindId||S.kinder[0]?.id,datum:d.date,zeit:'15:00',dauer:60,lid:(S.leistungen.find(l=>l.art==='stunde')||S.leistungen[0]).id},true)},
+  editTermin:d=>{const t=S.termine.find(x=>x.id===d.id);t&&terminForm(t,false)},
+  delTermin:d=>{const t=S.termine.find(x=>x.id===d.id);const del=all=>{S.termine=S.termine.filter(x=>x.id!==t.id&&!(all&&t.serie&&x.serie===t.serie&&x.datum>=t.datum&&!x.rechnungId));save();render();toast('Gelöscht')};
+    const serie=t.serie&&S.termine.some(x=>x.serie===t.serie&&x.id!==t.id&&x.datum>t.datum);
+    ask('Termin löschen?',[{label:'Nur diesen Termin',cls:'danger',fn:()=>del(false)},...(serie?[{label:'Diesen und alle folgenden',cls:'danger',fn:()=>del(true)}]:[]),{label:'Abbrechen',cls:'ghost'}])},
+  editKind:d=>kindForm(d.id?kind(d.id):null),
+  delKind:d=>ask('Kind und alle offenen Termine löschen?',[{label:'Löschen',cls:'danger',fn:()=>{S.kinder=S.kinder.filter(k=>k.id!==d.id);S.termine=S.termine.filter(t=>t.kindId!==d.id);save();render();toast('Gelöscht')}},{label:'Abbrechen',cls:'ghost'}]),
+  makeInv:()=>{const neu=createInvoices(selMonth,today());save();render();ask(`${neu.length} Rechnung${neu.length>1?'en':''} für ${monatName(selMonth)} erstellt.`,[{label:'Jetzt drucken',fn:()=>doPrint(neu)},{label:'Später',cls:'ghost'}])},
+  printMonth:()=>doPrint(S.rechnungen.filter(r=>r.monat===selMonth).sort((a,b)=>a.nr.localeCompare(b.nr))),
+  showInv:d=>showInv(S.rechnungen.find(r=>r.id===d.id)),
+  printOne:d=>doPrint([S.rechnungen.find(r=>r.id===d.id)]),
+  paid:d=>{const r=S.rechnungen.find(x=>x.id===d.id);r.bezahlt=r.bezahlt?null:{datum:today(),quelle:'manuell'};save();render()},
+  storno:d=>ask('Rechnung stornieren? Die Termine werden wieder frei und können neu abgerechnet werden.',[{label:'Stornieren',cls:'danger',fn:()=>{S.rechnungen=S.rechnungen.filter(r=>r.id!==d.id);S.termine.forEach(t=>{if(t.rechnungId===d.id)t.rechnungId=null});save();render();toast('Storniert')}},{label:'Abbrechen',cls:'ghost'}]),
+  sampleCsv:()=>{match=runMatch(sampleCsv());render()},
+  csvText:()=>{const v=$('#csvtext').value;if(v.trim()){match=runMatch(v);render()}},
+  csvApply:()=>{let n=0;document.querySelectorAll('[data-i]:checked').forEach(c=>{const m=match.out[+c.dataset.i];m.ids.forEach(id=>{const r=S.rechnungen.find(x=>x.id===id);if(r&&!r.bezahlt){r.bezahlt={datum:today(),quelle:'CSV'};n++}})});save();match=null;render();toast(`${n} Rechnung${n===1?'':'en'} als bezahlt markiert`)},
+  hinweis:d=>{$('#settings [name=hinweis]').value=HINWEISE[d.k]},
+  addL:()=>{readSettings();S.leistungen.push({id:uid(),name:'Neue Leistung',art:'stunde',preis:45});save();render()},
+  delL:d=>{readSettings();S.leistungen=S.leistungen.filter(l=>l.id!==d.id);save();render()},
+  backup:()=>{const data=JSON.stringify(S,null,1),name=`lerntraining-sicherung-${today()}.json`;
+    try{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type:'application/json'}));a.download=name;document.body.append(a);a.click();a.remove();toast('Sicherung wird gespeichert')}catch(e){}
+    if(inFrame){navigator.clipboard?.writeText(data).then(()=>toast('In der Vorschau: Sicherung in die Zwischenablage kopiert')).catch(()=>{})}},
+  clearDemo:()=>ask('Alle Beispieldaten löschen und mit eigenen Daten starten?',[{label:'Ja, löschen',cls:'danger',fn:()=>{S=blank();save();location.hash='#einstellungen';route();toast('Bitte zuerst den Briefkopf ausfüllen')}},{label:'Abbrechen',cls:'ghost'}])
+};
+function readSettings(){const f=$('#settings');if(!f)return;const v=Object.fromEntries(new FormData(f));const s=S.settings;
+  ['name','titel','str','ort','tel','mail','iban','bic','bank','stnr','hinweis'].forEach(k=>s[k]=v[k]??s[k]);s.ziel=+v.ziel||0;s.nrNext=Math.max(1,+v.nrNext||1);
+  S.leistungen.forEach(l=>{if(v['l_name_'+l.id]!=null){l.name=v['l_name_'+l.id];l.art=v['l_art_'+l.id];l.preis=+v['l_preis_'+l.id]||0}})}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b)return;const f=A[b.dataset.act];if(f){e.preventDefault();f(b.dataset)}});
+document.addEventListener('submit',e=>{e.preventDefault();if(e.target.id==='settings'){readSettings();S.demo=false;save();render();toast('Einstellungen gespeichert')}else if(e.target.id==='f'&&onSub)onSub(new FormData(e.target))});
+document.addEventListener('change',e=>{const c=e.target.dataset.chg;if(!c)return;
+  if(c==='month'){selMonth=e.target.value;render()}
+  else if(c==='csv'||c==='restore'){const file=e.target.files[0];if(!file)return;const rd=new FileReader();
+    rd.onload=()=>{let txt=String(rd.result);if(c==='csv'){if(txt.includes(String.fromCharCode(65533))){const r2=new FileReader();r2.onload=()=>{match=runMatch(String(r2.result));render()};r2.readAsText(file,'windows-1252');return}match=runMatch(txt);render()}
+      else{try{const d=JSON.parse(txt);if(!d.settings)throw 0;ask('Sicherung laden? Die aktuellen Daten werden ersetzt.',[{label:'Laden',cls:'danger',fn:()=>{S=d;save();render();toast('Sicherung geladen')}},{label:'Abbrechen',cls:'ghost'}])}catch(err){toast('Das ist keine gültige Sicherungsdatei.')}}};
+    rd.readAsText(file,'utf-8');e.target.value=''}
+});
+route();
+}
+</script>
+</body>
+</html>
