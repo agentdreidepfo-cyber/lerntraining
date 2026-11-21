@@ -151,6 +151,7 @@ details{margin-top:14px}summary{cursor:pointer;color:var(--tinte);font-weight:70
 .inv .ibody{flex:1}
 .inv .if{margin-top:10mm;padding-top:3mm;font-size:8.5pt;color:#333;text-align:center;line-height:1.5}
 .inv.pre .band,.inv.pre .ihr{display:none}
+.inv.pre{padding-top:118mm}.inv.nosnd .snd{visibility:hidden}
 @media(max-width:600px){table{font-size:14px}.stack thead{display:none}.stack tr{display:grid;padding-block:10px;border-bottom:1px solid var(--line)}.stack td{display:flow-root;border:0;padding:3px 0;padding-inline-start:8em;text-align:start}.stack td::before{content:attr(data-l);float:inline-start;width:7.5em;margin-inline-start:-8em;white-space:normal;color:var(--muted)}.stack td:empty{display:none}.tacts{justify-content:flex-start}.lrow{grid-template-columns:1fr 1fr}.strip small{display:none}.agenda li{grid-template-columns:70px minmax(0,1fr)}.agenda li>.btn{grid-column:2;justify-self:start}.agenda .t{font-size:20px}.ctl{width:100%}.ctl .seg{margin-right:auto}.ctl .btn{padding:8px 12px}}
 @media print{@page{size:A4;margin:0}body{background:#fff}body>*:not(#print){display:none!important}#print{display:block!important}.inv{min-height:0;height:296mm;break-after:page}.inv:last-child{break-after:auto}}
 @media(prefers-reduced-motion:reduce){.toast{transition:none}}
@@ -200,8 +201,8 @@ const BEREICHE=['Legasthenie','Dyskalkulie','Legasthenie & Dyskalkulie'];
 const HINWEISE={k19:'Gemäß § 19 UStG wird keine Umsatzsteuer berechnet.',n21:'Die Leistung ist gemäß § 4 Nr. 21 UStG von der Umsatzsteuer befreit.'};
 const DEMO_IBAN='DE00 0000 0000 0000 0000 00';
 
-function blank(){const y=new Date().getFullYear();return{ver:3,demo:false,lastBackup:null,
-  settings:{name:'Doris Lutz',titel:'Legasthenie- & Dyskalkulie Training',quali:'Dipl. Legasthenietrainerin EÖDL\nDipl. Dyskalkulietrainerin EÖDL\nDipl. Lerndidaktikerin EÖDL',str:'Austraße 10',ort:'91738 Pfofeld',tel:'09834 1828',mobil:'0175 4859268',mail:'lutzdoris@aol.com',iban:'',bic:'',bank:'VR Bank im südlichen Franken eG',stnr:'',ust:'inkl',ustSatz:19,hinweis:HINWEISE.k19,ziel:14,nrJahr:y,nrNext:1,start:'14:00',ausfall:false,logo:'',briefpapier:false},
+function blank(){const y=new Date().getFullYear();return{ver:4,demo:false,lastBackup:null,
+  settings:{name:'Doris Lutz',titel:'Legasthenie- & Dyskalkulie Training',quali:'Dipl. Legasthenietrainerin EÖDL\nDipl. Dyskalkulietrainerin EÖDL\nDipl. Lerndidaktikerin EÖDL',str:'Austraße 10',ort:'91738 Pfofeld',tel:'09834 1828',mobil:'0175 4859268',mail:'lutzdoris@aol.com',iban:'',bic:'',bank:'VR Bank im südlichen Franken eG',stnr:'',ust:'inkl',ustSatz:19,hinweis:HINWEISE.k19,ziel:14,nrJahr:y,nrNext:1,start:'14:00',ausfall:false,logo:'',briefpapier:true,sndPre:false},
   leistungen:[{id:'schule',name:'Trainingseinheit in der Schule',preis:33,dauer:45,einheiten:1},{id:'std',name:'Trainingseinheit',preis:33,dauer:45,einheiten:1},{id:'test',name:'Eingangstest',preis:66,dauer:90,einheiten:1}],kinder:[],termine:[],rechnungen:[]}}
 const isTest=l=>!!l&&/test/i.test(l.name);
 const stdL=()=>S.leistungen.find(l=>!isTest(l))||S.leistungen[0];
@@ -209,7 +210,7 @@ const testL=()=>S.leistungen.find(isTest);
 function migrate(s){const b=blank();s.settings={...b.settings,...s.settings};
   s.leistungen=(s.leistungen||b.leistungen).map(l=>{const n={...l};delete n.art;if(!n.dauer)n.dauer=45;if(!n.einheiten)n.einheiten=1;return n});
   s.kinder=s.kinder||[];s.termine=s.termine||[];s.rechnungen=s.rechnungen||[];
-  s.kinder.forEach(k=>{if(k.aktiv==null)k.aktiv=true});s.termine.forEach(t=>{if(t.einheiten==null)t.einheiten=1});return s}
+  s.kinder.forEach(k=>{if(k.aktiv==null)k.aktiv=true});s.termine.forEach(t=>{if(t.einheiten==null)t.einheiten=1});if((s.ver||0)<4){s.settings.briefpapier=true;s.ver=4}return s}
 function demo(){
   const s=blank();s.demo=true;Object.assign(s.settings,{iban:DEMO_IBAN,start:'13:30',ausfall:true});
   const VN=['Lena','Jonas','Mia','Paul','Emma','Ben','Hannah','Luis','Sophie','Felix','Marie','Noah','Lea','Elias','Anna','Leon','Clara','Max','Lina','Jakob','Ella','Tim','Nele','Finn','Laura','Moritz','Johanna','Lukas','Ida','David','Greta','Simon','Paula'];
@@ -254,7 +255,7 @@ const logoSrc=()=>S.settings.logo||'logo.png';
 let logoPre=new Image();
 
 try{S=JSON.parse(localStorage.getItem(KEY))}catch(e){S=null}
-S=S&&S.settings&&(!S.demo||S.ver===3)?migrate(S):demo();
+S=S&&S.settings&&(!S.demo||S.ver>=3)?migrate(S):demo();
 save();logoPre.src=logoSrc();
 try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist()}catch(e){}
 
@@ -335,7 +336,8 @@ V.einstellungen=()=>{const s=S.settings,f=(n,l,t='text',x='')=>`<label>${l}<inpu
   <div class="row">${f('name','Name')}${f('titel','Zusatz (nur ohne Logo sichtbar)')}</div>
   <label>Qualifikationen (eine pro Zeile)<textarea name="quali">${esc(s.quali)}</textarea></label>
   <div class="row">${f('str','Straße & Nr.')}${f('ort','PLZ & Ort')}</div><div class="row">${f('tel','Telefon','tel')}${f('mobil','Mobil','tel')}${f('mail','E-Mail','email')}</div>
-  <label class="chk"><input type="checkbox" name="briefpapier"${s.briefpapier?' checked':''}> Auf vorgedrucktes Briefpapier drucken (Muster, Logo und Kontaktblock weglassen)</label></fieldset>
+  <label class="chk"><input type="checkbox" name="briefpapier"${s.briefpapier?' checked':''}> Auf vorgedrucktes Briefpapier drucken (Muster, Logo und Kontaktblock weglassen)</label>${s.briefpapier?`<label class="chk"><input type="checkbox" name="sndPre"${s.sndPre?' checked':''}> Absenderzeile über der Adresse ist auch vorgedruckt</label>`:''}
+  <div class="acts" style="margin-top:4px"><button type="button" class="btn ghost" data-act="probe">Probe-Rechnung ansehen &amp; drucken</button></div><p class="muted" style="font-size:14px">Einmal auf das Briefpapier drucken und prüfen, ob die Adresse im Fenster sitzt und nichts überlappt.</p></fieldset>
   <fieldset><legend>Bankverbindung</legend><div class="row">${f('bank','Bank')}${f('iban','IBAN')}${f('bic','BIC (optional)')}</div>${!s.iban||s.iban===DEMO_IBAN?'<p class="warn">Bitte die echte IBAN eintragen – sie steht unten auf jeder Rechnung.</p>':''}</fieldset>
   <fieldset><legend>Steuer &amp; Rechnung</legend>${f('stnr','Steuernummer')}${s.stnr?'':'<p class="warn">Die Steuernummer steht auf jeder Rechnung. Bitte eintragen.</p>'}
   <div class="row"><label>Umsatzsteuer<select name="ust"><option value="inkl"${s.ust==='inkl'?' selected':''}>Preise enthalten Mehrwertsteuer</option><option value="frei"${s.ust==='frei'?' selected':''}>Keine Mehrwertsteuer</option></select></label>${s.ust==='inkl'?f('ustSatz','Steuersatz %','number','min="0" step="1" inputmode="numeric"'):''}</div>
@@ -360,7 +362,7 @@ function render(){
 function route(){const t=location.hash.slice(1);tab=V[t]?t:'kalender';match=tab==='zahlungen'?match:null;render();scrollTo(0,0)}
 addEventListener('hashchange',route);
 
-let onSub=null,askBtns=[],tt;
+let onSub=null,askBtns=[],tt,probeR=null;
 function modal(html,sub,wide){$('#mbox').className='mbox'+(wide?' wide':'');$('#mbox').innerHTML=html;onSub=sub||null;$('#modal').hidden=false;$('#modal').scrollTop=0}
 function close(){$('#modal').hidden=true;$('#mbox').innerHTML='';onSub=null}
 function ask(msg,btns,sub){modal(`<h3>${msg}</h3>${sub?`<p class="muted">${sub}</p>`:''}<div class="acts">${btns.map((b,i)=>`<button class="btn ${b.cls||''}" data-act="askBtn" data-i="${i}">${b.label}</button>`).join('')}</div>`);askBtns=btns}
@@ -421,7 +423,7 @@ function kindForm(k){
   });
 }
 function letter(r,title,meta,body){const s=S.settings;
-  return`<article class="inv${s.briefpapier?' pre':''}"><div class="band"></div><i class="falz f1"></i><i class="falz lo"></i>
+  return`<article class="inv${s.briefpapier?' pre':''}${s.briefpapier&&s.sndPre?' nosnd':''}"><div class="band"></div><i class="falz f1"></i><i class="falz lo"></i>
   <div class="iadr"><div class="snd">${esc(s.name)} · ${esc(s.str)} · ${esc(s.ort)}</div><div class="lbl">RECHNUNGSADRESSE:</div>${esc(r.empf)}<br>${esc(r.str)}<br>${esc(r.ort)}</div>
   <div class="ihr">${logoSrc()?`<img src="${esc(logoSrc())}" alt="">`:`<div class="iname">${esc(s.name)}</div><div class="ititel">${esc(s.titel)}</div>`}${s.quali?`<div class="quali">${esc(s.quali)}</div>`:''}<div class="kontakt">${esc(s.str)}, ${esc(s.ort)}${s.tel?'<br>Tel. '+esc(s.tel):''}${s.mobil?'<br>Mobil '+esc(s.mobil):''}${s.mail?'<br>E-Mail: '+esc(s.mail):''}</div></div>
   <div class="ibody"><div class="meta">${meta.map(([a,b])=>`<b>${a}</b><span>${b}</span>`).join('')}</div>${title?`<h1 style="font-size:15pt;margin:0 0 4mm">${title}</h1>`:''}${body}</div>
@@ -518,17 +520,23 @@ const A={
   hinweis:d=>{$('#settings [name=hinweis]').value=HINWEISE[d.k];readSettings();save();toast('Hinweis übernommen')},
   addL:()=>{readSettings();S.leistungen.push({id:uid(),name:'Neue Leistung',preis:33,dauer:45,einheiten:1});save();render()},
   delL:d=>{readSettings();S.leistungen=S.leistungen.filter(l=>l.id!==d.id);save();render()},
+  probe:()=>{readSettings();save();const s=S.settings,l=stdL(),d=today(),ds=[7,14,21].map(n=>iso(addDays(new Date(),-n))).reverse();
+    const pos=ds.map(x=>({datum:x,text:l.name,einheiten:1,satz:+l.preis,betrag:+l.preis}));
+    const r={id:'probe',nr:new Date().getFullYear()+' '+String(s.nrNext).padStart(3,'0'),kname:'Max Mustermann',bereich:'Legasthenie',empf:'Fam. Mustermann',str:'Musterstraße 1',ort:'91738 Pfofeld',datum:d,faellig:iso(addDays(new Date(),+s.ziel||14)),monat:d.slice(0,7),pos,summe:r2(pos.reduce((a,p)=>a+p.betrag,0))};
+    modal(`<h3>Probe-Rechnung</h3><p class="muted">Nur zum Testen – wird nicht gespeichert und verbraucht keine Rechnungsnummer.</p><div class="sheetwrap" id="sw">${invHTML(r)}</div><div class="acts"><span class="sp"></span><button class="btn ghost" data-act="close">Schließen</button><button class="btn" data-act="probePrint">Probe drucken</button></div>`,null,true);probeR=r;
+    const sw=$('#sw'),inv=sw.querySelector('.inv');inv.style.zoom=Math.min(1,(sw.clientWidth-16)/794)},
+  probePrint:()=>probeR&&doPrint(invHTML(probeR)),
   logoReset:()=>{S.settings.logo='';save();logoPre.src=logoSrc();render()},
   backup,
   clearDemo:()=>ask('Alle Beispieldaten löschen und mit eigenen Daten starten?',[{label:'Ja, löschen',cls:'danger',fn:()=>{const keep=S.settings,ls=S.leistungen;S=blank();S.settings={...keep,nrNext:1,nrJahr:new Date().getFullYear(),iban:keep.iban===DEMO_IBAN?'':keep.iban};S.leistungen=ls;save();location.hash='#kalender';route();toast('Los geht’s – zuerst IBAN und Steuernummer eintragen')}},{label:'Abbrechen',cls:'ghost'}],'Briefkopf, Logo und Preise bleiben erhalten. Kinder, Termine und Rechnungen werden gelöscht.')
 };
-function readSettings(){const f=$('#settings');if(!f)return false;const v=Object.fromEntries(new FormData(f));const s=S.settings,oldUst=s.ust;
+function readSettings(){const f=$('#settings');if(!f)return false;let oldBp;const v=Object.fromEntries(new FormData(f));const s=S.settings,oldUst=s.ust;
   ['name','titel','quali','str','ort','tel','mobil','mail','iban','bic','bank','stnr','start','ust'].forEach(k=>{if(v[k]!=null)s[k]=v[k]});
   if(v.hinweis!=null)s.hinweis=v.hinweis;if(v.ustSatz!=null)s.ustSatz=+v.ustSatz||0;
-  s.ziel=+v.ziel||0;s.nrNext=Math.max(1,+v.nrNext||1);s.ausfall=!!v.ausfall;s.briefpapier=!!v.briefpapier;
+  oldBp=s.briefpapier;s.ziel=+v.ziel||0;s.nrNext=Math.max(1,+v.nrNext||1);s.ausfall=!!v.ausfall;s.briefpapier=!!v.briefpapier;s.sndPre=!!v.sndPre;
   S.leistungen.forEach(l=>{if(v['l_name_'+l.id]!=null){l.name=v['l_name_'+l.id];l.preis=+String(v['l_preis_'+l.id]).replace(',','.')||0;l.dauer=+v['l_dauer_'+l.id]||45}});
   $('#apptitle').innerHTML=esc(s.name||'Lerntraining')+' <small>Termine &amp; Rechnungen</small>';
-  return oldUst!==s.ust}
+  return oldUst!==s.ust||oldBp!==s.briefpapier}
 function ferienCount(){const f=$('#f'),c=$('#fcount');if(!f||!c||!f.von)return;const n=S.termine.filter(t=>t.datum>=f.von.value&&t.datum<=f.bis.value&&!t.abgesagt&&!t.rechnungId).length;c.textContent=`${n} Termin${n===1?'':'e'} in diesem Zeitraum`}
 document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b)return;const f=A[b.dataset.act];if(f){e.preventDefault();f(b.dataset)}});
 document.addEventListener('submit',e=>{e.preventDefault();if(e.target.id==='f'&&onSub)onSub(new FormData(e.target))});
@@ -544,7 +552,7 @@ document.addEventListener('change',e=>{const el=e.target,c=el.dataset.chg;
   else if(c==='kalle'){kalle=el.checked;$('#klist').innerHTML=klist()}
   else if(c==='csv'||c==='restore'){const file=el.files[0];if(!file)return;const rd=new FileReader();
     rd.onload=()=>{let txt=String(rd.result);if(c==='csv'){if(txt.includes(String.fromCharCode(65533))){const r2=new FileReader();r2.onload=()=>{match=runMatch(String(r2.result));render()};r2.readAsText(file,'windows-1252');return}match=runMatch(txt);render()}
-      else{try{const d=JSON.parse(txt);if(!d.settings)throw 0;ask('Sicherung laden?',[{label:'Laden',cls:'danger',fn:()=>{S=migrate(d);S.demo=false;S.ver=3;save();logoPre.src=logoSrc();render();toast('Sicherung geladen')}},{label:'Abbrechen',cls:'ghost'}],'Die aktuellen Daten auf diesem Gerät werden dabei ersetzt.')}catch(err){toast('Das ist keine gültige Sicherungsdatei.')}}};
+      else{try{const d=JSON.parse(txt);if(!d.settings)throw 0;ask('Sicherung laden?',[{label:'Laden',cls:'danger',fn:()=>{S=migrate(d);S.demo=false;save();logoPre.src=logoSrc();render();toast('Sicherung geladen')}},{label:'Abbrechen',cls:'ghost'}],'Die aktuellen Daten auf diesem Gerät werden dabei ersetzt.')}catch(err){toast('Das ist keine gültige Sicherungsdatei.')}}};
     rd.readAsText(file,'utf-8');el.value=''}
 });
 let tx=0,ty=0;
